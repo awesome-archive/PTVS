@@ -41,6 +41,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Python.Analysis.Engine" />
+    <Reference Include="Microsoft.PythonTools.Ipc.Json" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -53,6 +55,7 @@
       <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TestWindow\Microsoft.VisualStudio.TestWindow.Interfaces.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -63,36 +66,117 @@
     <Reference Include="envdte90, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>$(PackagesPath)\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+      <IncludeInVSIX>True</IncludeInVSIX>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Analysis\Analysis.csproj">
-      <Project>{a85d479d-67a9-4bdb-904a-7d86daf68a6f}</Project>
-      <Name>Microsoft.PythonTools.Analysis</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{b3db0521-d9e3-4f48-9e2e-e5ecae886049}</Project>
       <Name>Microsoft.PythonTools.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Ipc.Json\Ipc.Json.csproj">
-      <Project>{e1e1613d-0c96-42f9-9f2d-052c72533297}</Project>
-      <Name>Ipc.Json</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\PythonTools\PythonConstants.cs">
-      <Link>PythonConstants.cs</Link>
+      <Link>Common\PythonConstants.cs</Link>
     </Compile>
     <Compile Include="..\VSCommon\Infrastructure\VisualStudioApp.cs">
-      <Link>VisualStudioApp.cs</Link>
+      <Link>Common\VisualStudioApp.cs</Link>
     </Compile>
+    <Compile Include="Common\Config\ITestConfiguration.cs" />
+    <Compile Include="Pytest\Constants.cs" />
+    <Compile Include="Pytest\PytestConfiguration.cs" />
+    <Compile Include="Pytest\PytestDiscoveryResults.cs" />
+    <Compile Include="Common\Config\PythonProjectSettings.cs" />
+    <Compile Include="Common\Config\RunSettingsUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestDiscoverer.cs" />
-    <Compile Include="TestExecutor.cs" />
-    <Compile Include="TestProtocol.cs" />
-    <Compile Include="TestReader.cs" />
+    <Compile Include="Pytest\PytestExtensions.cs" />
+    <Compile Include="Pytest\PytestTestDiscoverer.cs" />
+    <Compile Include="Pytest\PytestTestExecutor.cs" />
+    <Compile Include="Common\Services\ExecutorService.cs" />
+    <Compile Include="Pytest\JunitXmlTestResultParser.cs" />
+    <Compile Include="Common\Services\CodeCoverage.cs" />   
+    <Compile Include="Common\Services\ProcessExecute.cs" />
+    <Compile Include="Common\Services\PythonDebugMode.cs" />
+    <Compile Include="Common\TestCollection.cs" />
+    <Compile Include="Common\PythonTestDiscoverer.cs" />
+    <Compile Include="Common\TestProtocol.cs" />
+    <Compile Include="Common\TestReader.cs" />
+    <Compile Include="UnitTest\UnitTestTestExecutor.cs" />
+    <Compile Include="UnitTest\UnitTestTestDiscoverer.cs" />
+    <Compile Include="UnitTest\UnitTestDiscoveryResults.cs" />
+    <Compile Include="UnitTest\UnitTestExtensions.cs" />
+    <Compile Include="Common\Utils\TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="PythonFiles\testing_tools\adapter\discovery.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\adapter\errors.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\adapter\info.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\adapter\pytest\_cli.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\adapter\pytest\_discovery.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\adapter\pytest\_pytest_item.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\adapter\pytest\__init__.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\adapter\report.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\adapter\unittest\_cli.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\adapter\unittest\_discovery.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\adapter\unittest\__init__.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\adapter\util.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\adapter\__init__.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\adapter\__main__.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\run_adapter.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="PythonFiles\testing_tools\__init__.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\ProjectAfter.settings" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

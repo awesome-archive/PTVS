@@ -21,7 +21,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.PythonTools.Infrastructure;
 using Microsoft.PythonTools.Interpreter;
@@ -77,7 +76,8 @@ namespace Microsoft.PythonTools {
         }
 
         public void WriteLog(TextWriter writer, bool includeAnalysisLog) {
-            var pythonPathIsMasked = _serviceProvider.GetPythonToolsService().GeneralOptions.ClearGlobalPythonPath
+            var pyService = _serviceProvider.GetPythonToolsService();
+            var pythonPathIsMasked = pyService.GeneralOptions.ClearGlobalPythonPath
                 ? " (masked)"
                 : "";
             var dte = (EnvDTE.DTE)_serviceProvider.GetService(typeof(EnvDTE.DTE));
@@ -136,9 +136,9 @@ namespace Microsoft.PythonTools {
                             writer.WriteLine("            Id: " + factory.Configuration.Id);
                             writer.WriteLine("            Version: " + factory.Configuration.Version);
                             writer.WriteLine("            Arch: " + factory.Configuration.Architecture);
-                            writer.WriteLine("            Prefix Path: " + factory.Configuration.PrefixPath ?? "(null)");
-                            writer.WriteLine("            Path: " + factory.Configuration.InterpreterPath ?? "(null)");
-                            writer.WriteLine("            Windows Path: " + factory.Configuration.WindowsInterpreterPath ?? "(null)");
+                            writer.WriteLine("            Prefix Path: " + (factory.Configuration.GetPrefixPath() ?? "(null)"));
+                            writer.WriteLine("            Path: " + (factory.Configuration.InterpreterPath ?? "(null)"));
+                            writer.WriteLine("            Windows Path: " + (factory.Configuration.GetWindowsInterpreterPath() ?? "(null)"));
                             writer.WriteLine(string.Format("            Path Env: {0}={1}{2}",
                                 factory.Configuration.PathEnvironmentVariable ?? "(null)",
                                 Environment.GetEnvironmentVariable(factory.Configuration.PathEnvironmentVariable ?? ""),
@@ -161,10 +161,10 @@ namespace Microsoft.PythonTools {
                     writer.WriteLine("        Factory: " + config.Description);
                     writer.WriteLine("        Version: " + config.Version);
                     writer.WriteLine("        Arch: " + config.Architecture);
-                    writer.WriteLine("        Prefix Path: " + config.PrefixPath ?? "(null)");
-                    writer.WriteLine("        Path: " + config.InterpreterPath ?? "(null)");
-                    writer.WriteLine("        Windows Path: " + config.WindowsInterpreterPath ?? "(null)");
-                    writer.WriteLine("        Path Env: " + config.PathEnvironmentVariable ?? "(null)");
+                    writer.WriteLine("        Prefix Path: " + (config.GetPrefixPath() ?? "(null)"));
+                    writer.WriteLine("        Path: " + (config.InterpreterPath ?? "(null)"));
+                    writer.WriteLine("        Windows Path: " + (config.GetWindowsInterpreterPath() ?? "(null)"));
+                    writer.WriteLine("        Path Env: " + (config.PathEnvironmentVariable ?? "(null)"));
                     writer.WriteLine();
                 }
             }
@@ -176,6 +176,65 @@ namespace Microsoft.PythonTools {
                 writer.WriteLine("        " + launcher.Name);
                 writer.WriteLine();
             }
+
+            writer.WriteLine("General Options:");
+            writer.WriteLine("    AutoAnalyzeStandardLibrary: {0}", pyService.GeneralOptions.AutoAnalyzeStandardLibrary);
+            writer.WriteLine("    ClearGlobalPythonPath: {0}", pyService.GeneralOptions.ClearGlobalPythonPath);
+            writer.WriteLine("    CrossModuleAnalysisLimit: {0}", pyService.GeneralOptions.CrossModuleAnalysisLimit);
+            writer.WriteLine("    ElevatePip: {0}", pyService.GeneralOptions.ElevatePip);
+            writer.WriteLine("    IndentationInconsistencySeverity: {0}", pyService.GeneralOptions.IndentationInconsistencySeverity);
+            writer.WriteLine("    InvalidEncodingWarning: {0}", pyService.GeneralOptions.InvalidEncodingWarning);
+            writer.WriteLine("    PromptForEnvCreate: {0}", pyService.GeneralOptions.PromptForEnvCreate);
+            writer.WriteLine("    PromptForPackageInstallation: {0}", pyService.GeneralOptions.PromptForPackageInstallation);
+            writer.WriteLine("    ShowOutputWindowForPackageInstallation: {0}", pyService.GeneralOptions.ShowOutputWindowForPackageInstallation);
+            writer.WriteLine("    ShowOutputWindowForVirtualEnvCreate: {0}", pyService.GeneralOptions.ShowOutputWindowForVirtualEnvCreate);
+            writer.WriteLine("    UnresolvedImportWarning: {0}", pyService.GeneralOptions.UnresolvedImportWarning);
+            writer.WriteLine("    UpdateSearchPathsWhenAddingLinkedFiles: {0}", pyService.GeneralOptions.UpdateSearchPathsWhenAddingLinkedFiles);
+            writer.WriteLine();
+
+            writer.WriteLine("Advanced Options:");
+            writer.WriteLine("    AddNewLineAtEndOfFullyTypedWord: {0}", pyService.AdvancedOptions.AddNewLineAtEndOfFullyTypedWord);
+            writer.WriteLine("    AutoListIdentifiers: {0}", pyService.AdvancedOptions.AutoListIdentifiers);
+            writer.WriteLine("    AutoListMembers: {0}", pyService.AdvancedOptions.AutoListMembers);
+            writer.WriteLine("    ColorNames: {0}", pyService.AdvancedOptions.ColorNames);
+            writer.WriteLine("    ColorNamesWithAnalysis: {0}", pyService.AdvancedOptions.ColorNamesWithAnalysis);
+            writer.WriteLine("    CompletionCommittedBy: {0}", pyService.AdvancedOptions.CompletionCommittedBy);
+            writer.WriteLine("    EnterCommitsIntellisense: {0}", pyService.AdvancedOptions.EnterCommitsIntellisense);
+            writer.WriteLine("    EnterOutliningModeOnOpen: {0}", pyService.AdvancedOptions.EnterOutliningModeOnOpen);
+            writer.WriteLine("    FilterCompletions: {0}", pyService.AdvancedOptions.FilterCompletions);
+            writer.WriteLine("    HideAdvancedMembers: {0}", pyService.AdvancedOptions.HideAdvancedMembers);
+            writer.WriteLine("    IntersectMembers: {0}", pyService.AdvancedOptions.IntersectMembers);
+            writer.WriteLine("    PasteRemovesReplPrompts: {0}", pyService.AdvancedOptions.PasteRemovesReplPrompts);
+            writer.WriteLine();
+
+            writer.WriteLine("Debugger Options:");
+            writer.WriteLine("    BreakOnSystemExitZero: {0}", pyService.DebuggerOptions.BreakOnSystemExitZero);
+            writer.WriteLine("    DebugStdLib: {0}", pyService.DebuggerOptions.DebugStdLib);
+            writer.WriteLine("    PromptBeforeRunningWithBuildError: {0}", pyService.DebuggerOptions.PromptBeforeRunningWithBuildError);
+            writer.WriteLine("    ShowFunctionReturnValue: {0}", pyService.DebuggerOptions.ShowFunctionReturnValue);
+            writer.WriteLine("    TeeStandardOutput: {0}", pyService.DebuggerOptions.TeeStandardOutput);
+            writer.WriteLine("    UseLegacyDebugger: {0}", pyService.DebuggerOptions.UseLegacyDebugger);
+            writer.WriteLine("    WaitOnAbnormalExit: {0}", pyService.DebuggerOptions.WaitOnAbnormalExit);
+            writer.WriteLine("    WaitOnNormalExit: {0}", pyService.DebuggerOptions.WaitOnNormalExit);
+            writer.WriteLine();
+
+            writer.WriteLine("Conda Options:");
+            writer.WriteLine("    CustomCondaExecutablePath: {0}", pyService.CondaOptions.CustomCondaExecutablePath);
+            writer.WriteLine();
+
+            writer.WriteLine("Interactive Options:");
+            writer.WriteLine("    CompletionMode: {0}", pyService.InteractiveOptions.CompletionMode);
+            writer.WriteLine("    LiveCompletionsOnly: {0}", pyService.InteractiveOptions.LiveCompletionsOnly);
+            writer.WriteLine("    Scripts: {0}", pyService.InteractiveOptions.Scripts);
+            writer.WriteLine("    UseSmartHistory: {0}", pyService.InteractiveOptions.UseSmartHistory);
+            writer.WriteLine();
+
+            writer.WriteLine("Debug Interactive Options:");
+            writer.WriteLine("    CompletionMode: {0}", pyService.DebugInteractiveOptions.CompletionMode);
+            writer.WriteLine("    LiveCompletionsOnly: {0}", pyService.DebugInteractiveOptions.LiveCompletionsOnly);
+            writer.WriteLine("    Scripts: {0}", pyService.DebugInteractiveOptions.Scripts);
+            writer.WriteLine("    UseSmartHistory: {0}", pyService.DebugInteractiveOptions.UseSmartHistory);
+            writer.WriteLine();
 
             try {
                 writer.WriteLine("Logged events/stats:");

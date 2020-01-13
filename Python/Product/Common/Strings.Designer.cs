@@ -19,7 +19,7 @@ namespace Microsoft.PythonTools {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Strings {
@@ -88,7 +88,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The environment file is typically named environment.yml and specifies the conda and pip packages to install when creating the conda environment..
+        ///   Looks up a localized string similar to Path to environment.yml file, which specifies the Conda and pip packages to install when creating the Conda environment..
         /// </summary>
         public static string AddCondaEnvironmentFileHelp {
             get {
@@ -102,6 +102,15 @@ namespace Microsoft.PythonTools {
         public static string AddCondaEnvironmentFileInvalid {
             get {
                 return ResourceManager.GetString("AddCondaEnvironmentFileInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Environment file path.
+        /// </summary>
+        public static string AddCondaEnvironmentFileName {
+            get {
+                return ResourceManager.GetString("AddCondaEnvironmentFileName", resourceCulture);
             }
         }
         
@@ -160,7 +169,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Preview in progress....
+        ///   Looks up a localized string similar to Building preview....
         /// </summary>
         public static string AddCondaEnvironmentPreviewInProgress {
             get {
@@ -206,11 +215,29 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to List of conda packages to install when creating the conda environment. Entries should be separated by spaces..
+        ///   Looks up a localized string similar to Add packages.
+        /// </summary>
+        public static string AddCondaPackagesBrowseButton {
+            get {
+                return ResourceManager.GetString("AddCondaPackagesBrowseButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to List of Conda packages to install when creating the Conda environment. Entries should be separated by spaces. Example: numpy pandas.
         /// </summary>
         public static string AddCondaPackagesHelpText {
             get {
                 return ResourceManager.GetString("AddCondaPackagesHelpText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Package names.
+        /// </summary>
+        public static string AddCondaPackagesName {
+            get {
+                return ResourceManager.GetString("AddCondaPackagesName", resourceCulture);
             }
         }
         
@@ -224,7 +251,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ex. numpy pandas.
+        ///   Looks up a localized string similar to Example: &quot;numpy pandas&quot;. If no packages are listed, Python will be installed.
         /// </summary>
         public static string AddCondaPackagesWatermark {
             get {
@@ -269,6 +296,15 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        public static string AddEnvironmentAddButtonAutomationName {
+            get {
+                return ResourceManager.GetString("AddEnvironmentAddButtonAutomationName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Cancel.
         /// </summary>
         public static string AddEnvironmentCancelButton {
@@ -287,11 +323,29 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Environment....
+        /// </summary>
+        public static string AddEnvironmentComboListEntry {
+            get {
+                return ResourceManager.GetString("AddEnvironmentComboListEntry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to C_reate.
         /// </summary>
         public static string AddEnvironmentCreateButton {
             get {
                 return ResourceManager.GetString("AddEnvironmentCreateButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        public static string AddEnvironmentCreateButtonAutomationName {
+            get {
+                return ResourceManager.GetString("AddEnvironmentCreateButtonAutomationName", resourceCulture);
             }
         }
         
@@ -532,7 +586,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Windo_wed interpreter.
+        ///   Looks up a localized string similar to Windo_wed interpreter (optional).
         /// </summary>
         public static string AddExistingEnvironmentWindowsInterpreterPathLabel {
             get {
@@ -577,6 +631,24 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _Install.
+        /// </summary>
+        public static string AddInstalledEnvironmentInstallButton {
+            get {
+                return ResourceManager.GetString("AddInstalledEnvironmentInstallButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install.
+        /// </summary>
+        public static string AddInstalledEnvironmentInstallButtonAutomationName {
+            get {
+                return ResourceManager.GetString("AddInstalledEnvironmentInstallButtonAutomationName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Already installed.
         /// </summary>
         public static string AddInstalledEnvironmentInstalledLabel {
@@ -595,20 +667,20 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Install.
-        /// </summary>
-        public static string AddInstalledEnvironmentLaunch {
-            get {
-                return ResourceManager.GetString("AddInstalledEnvironmentLaunch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to (none).
         /// </summary>
         public static string AddInstalledEnvironmentNone {
             get {
                 return ResourceManager.GetString("AddInstalledEnvironmentNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (none available).
+        /// </summary>
+        public static string AddInstalledEnvironmentNoneAvailable {
+            get {
+                return ResourceManager.GetString("AddInstalledEnvironmentNoneAvailable", resourceCulture);
             }
         }
         
@@ -654,6 +726,15 @@ namespace Microsoft.PythonTools {
         public static string AddVirtualEnvironmentChangeLocationLink {
             get {
                 return ResourceManager.GetString("AddVirtualEnvironmentChangeLocationLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Environment description.
+        /// </summary>
+        public static string AddVirtualEnvironmentDescriptionName {
+            get {
+                return ResourceManager.GetString("AddVirtualEnvironmentDescriptionName", resourceCulture);
             }
         }
         
@@ -757,7 +838,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please wait....
+        ///   Looks up a localized string similar to Building preview....
         /// </summary>
         public static string AddVirtualEnvironmentPreviewInProgress {
             get {
@@ -775,7 +856,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Install packages fr_om file.
+        ///   Looks up a localized string similar to Install packages fr_om file (optional).
         /// </summary>
         public static string AddVirtualEnvironmentRequirementsPathLabel {
             get {
@@ -1211,11 +1292,29 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Conda environment &apos;{0}&apos; was created, but it will not be detected by Visual Studio because it does not contain Python..
+        /// </summary>
+        public static string CondaEnvCreatedWithoutPython {
+            get {
+                return ResourceManager.GetString("CondaEnvCreatedWithoutPython", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Conda Environment.
         /// </summary>
         public static string CondaEnvironmentDescription {
             get {
                 return ResourceManager.GetString("CondaEnvironmentDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Conda environment not detected.
+        /// </summary>
+        public static string CondaEnvNotDetected {
+            get {
+                return ResourceManager.GetString("CondaEnvNotDetected", resourceCulture);
             }
         }
         
@@ -1317,7 +1416,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The project &apos;{0}&apos; has a conda environment.yml file, but no conda environments..
+        ///   Looks up a localized string similar to The project &quot;{0}&quot; has a Conda environment.yml file, but no Conda environments..
         /// </summary>
         public static string CondaInfoBarCreateNewMessage {
             get {
@@ -1326,7 +1425,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Don&apos;t show this again.
+        ///   Looks up a localized string similar to Don&apos;t show this message again.
         /// </summary>
         public static string CondaInfoBarProjectIgnoreAction {
             get {
@@ -1335,7 +1434,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The project &apos;{0}&apos; has a reference to a missing conda environment &apos;{1}&apos;..
+        ///   Looks up a localized string similar to The project &quot;{0}&quot; has a reference to a missing Conda environment &quot;{1}&quot;..
         /// </summary>
         public static string CondaInfoBarRecreateMessage {
             get {
@@ -1398,7 +1497,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to create conda environment &apos;{0}&apos;.
+        ///   Looks up a localized string similar to Failed to create Conda environment &quot;{0}&quot;.
         /// </summary>
         public static string CondaStatusBarCreateFailed {
             get {
@@ -1407,7 +1506,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Creating conda environment &apos;{0}&apos;.
+        ///   Looks up a localized string similar to Creating Conda environment &quot;{0}&quot;.
         /// </summary>
         public static string CondaStatusBarCreateStarted {
             get {
@@ -1416,7 +1515,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully created conda environment &apos;{0}&apos;.
+        ///   Looks up a localized string similar to Successfully created Conda environment &quot;{0}&quot;.
         /// </summary>
         public static string CondaStatusBarCreateSucceeded {
             get {
@@ -1470,7 +1569,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create conda environment &apos;{0}&apos;.
+        ///   Looks up a localized string similar to Create Conda environment &quot;{0}&quot;.
         /// </summary>
         public static string CondaStatusCenterCreateTitle {
             get {
@@ -3290,11 +3389,29 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occurred opening command prompt..
+        /// </summary>
+        public static string ErrorOpeningCommandPrompt {
+            get {
+                return ResourceManager.GetString("ErrorOpeningCommandPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An error occurred opening this interactive window..
         /// </summary>
         public static string ErrorOpeningInteractiveWindow {
             get {
                 return ResourceManager.GetString("ErrorOpeningInteractiveWindow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred opening PowerShell..
+        /// </summary>
+        public static string ErrorOpeningPowershell {
+            get {
+                return ResourceManager.GetString("ErrorOpeningPowershell", resourceCulture);
             }
         }
         
@@ -3321,6 +3438,15 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occurred starting this interpreter..
+        /// </summary>
+        public static string ErrorStartingInterpreter {
+            get {
+                return ResourceManager.GetString("ErrorStartingInterpreter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot open file.
         /// </summary>
         public static string ErrorTaskItemZipArchiveNotSupportedCaption {
@@ -3335,6 +3461,15 @@ namespace Microsoft.PythonTools {
         public static string ErrorTaskItemZipArchiveNotSupportedMessage {
             get {
                 return ResourceManager.GetString("ErrorTaskItemZipArchiveNotSupportedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Testcase not found for test result: {0}.
+        /// </summary>
+        public static string ErrorTestCaseNotFound {
+            get {
+                return ResourceManager.GetString("ErrorTestCaseNotFound", resourceCulture);
             }
         }
         
@@ -4916,6 +5051,15 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to project.
+        /// </summary>
+        public static string ProjectText {
+            get {
+                return ResourceManager.GetString("ProjectText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Use the legacy debugger.
         /// </summary>
         public static string PtvsdDisableCaption {
@@ -5028,11 +5172,92 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable pytest.
+        /// </summary>
+        public static string PyTestEnableInfoBarAction {
+            get {
+                return ResourceManager.GetString("PyTestEnableInfoBarAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install and enable pytest.
+        /// </summary>
+        public static string PyTestInstallAndEnableInfoBarAction {
+            get {
+                return ResourceManager.GetString("PyTestInstallAndEnableInfoBarAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A pytest configuration file was detected in the {0} {1}, but pytest is not enabled..
+        /// </summary>
+        public static string PyTestInstalledConfigurationFileFound {
+            get {
+                return ResourceManager.GetString("PyTestInstalledConfigurationFileFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install pytest.
+        /// </summary>
+        public static string PyTestInstallInfoBarAction {
+            get {
+                return ResourceManager.GetString("PyTestInstallInfoBarAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid source in test: {0}.
+        /// </summary>
+        public static string PytestInvalidTestSource {
+            get {
+                return ResourceManager.GetString("PytestInvalidTestSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pytest is enabled in the {0} {1}, but it is not installed in the active environment..
+        /// </summary>
+        public static string PyTestNotInstalled {
+            get {
+                return ResourceManager.GetString("PyTestNotInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A pytest configuration file was detected in the {0} {1}, but pytest is not installed or enabled..
+        /// </summary>
+        public static string PyTestNotInstalledConfigurationFileFound {
+            get {
+                return ResourceManager.GetString("PyTestNotInstalledConfigurationFileFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Results for pytest not found {0}.
+        /// </summary>
+        public static string PytestResultsXmlNotFound {
+            get {
+                return ResourceManager.GetString("PytestResultsXmlNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Debug.
         /// </summary>
         public static string PythonDebugPropertyPageLabel {
             get {
                 return ResourceManager.GetString("PythonDebugPropertyPageLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discovery results file &apos;{0}&apos; was not found..
+        /// </summary>
+        public static string PythonDiscoveryResultsNotFound {
+            get {
+                return ResourceManager.GetString("PythonDiscoveryResultsNotFound", resourceCulture);
             }
         }
         
@@ -5208,6 +5433,15 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to start debugging because the Python interpreter path is null or empty.
+        /// </summary>
+        public static string PythonInterpreterPathNullOrEmpty {
+            get {
+                return ResourceManager.GetString("PythonInterpreterPathNullOrEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &amp;Python.
         /// </summary>
         public static string PythonMenuLabel {
@@ -5267,6 +5501,132 @@ namespace Microsoft.PythonTools {
         public static string PythonPublishPropertyPageLabel {
             get {
                 return ResourceManager.GetString("PythonPublishPropertyPageLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting {0} discovery for the {1} {2}. This can take up to {3} seconds..
+        /// </summary>
+        public static string PythonTestDiscovererStartedMessage {
+            get {
+                return ResourceManager.GetString("PythonTestDiscovererStartedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Python test discovery timeout, possibly due to blocking call. Go to https://aka.ms/VSTestExplorerPython for more details on test discovery..
+        /// </summary>
+        public static string PythonTestDiscovererTimeoutErrorMessage {
+            get {
+                return ResourceManager.GetString("PythonTestDiscovererTimeoutErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A file which may contain Python tests was detected in the {0} {1}, but the test framework is disabled..
+        /// </summary>
+        public static string PythonTestFileDetected {
+            get {
+                return ResourceManager.GetString("PythonTestFileDetected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Don&apos;t show this message again.
+        /// </summary>
+        public static string PythonTestFrameworkIgnoreInfoBarAction {
+            get {
+                return ResourceManager.GetString("PythonTestFrameworkIgnoreInfoBarAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test framework.
+        /// </summary>
+        public static string PythonTestPropertyPageFrameworkHelpText {
+            get {
+                return ResourceManager.GetString("PythonTestPropertyPageFrameworkHelpText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test _framework:.
+        /// </summary>
+        public static string PythonTestPropertyPageFrameworkLabel {
+            get {
+                return ResourceManager.GetString("PythonTestPropertyPageFrameworkLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test.
+        /// </summary>
+        public static string PythonTestPropertyPageLabel {
+            get {
+                return ResourceManager.GetString("PythonTestPropertyPageLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pattern.
+        /// </summary>
+        public static string PythonTestPropertyPageUnittestPatternHelpText {
+            get {
+                return ResourceManager.GetString("PythonTestPropertyPageUnittestPatternHelpText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Pattern:.
+        /// </summary>
+        public static string PythonTestPropertyPageUnittestPatternLabel {
+            get {
+                return ResourceManager.GetString("PythonTestPropertyPageUnittestPatternLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Root directory.
+        /// </summary>
+        public static string PythonTestPropertyPageUnittestRootDirectoryHelpText {
+            get {
+                return ResourceManager.GetString("PythonTestPropertyPageUnittestRootDirectoryHelpText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Root _directory:.
+        /// </summary>
+        public static string PythonTestPropertyPageUnittestRootDirectoryLabel {
+            get {
+                return ResourceManager.GetString("PythonTestPropertyPageUnittestRootDirectoryLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Don&apos;t show this message again.
+        /// </summary>
+        public static string PythonVersionNotSupportedDontShowMessageAgain {
+            get {
+                return ResourceManager.GetString("PythonVersionNotSupportedDontShowMessageAgain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are using Python {0} and some features might not work because Visual Studio doesn&apos;t support it yet..
+        /// </summary>
+        public static string PythonVersionNotSupportedInfoBarText {
+            get {
+                return ResourceManager.GetString("PythonVersionNotSupportedInfoBarText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to More info.
+        /// </summary>
+        public static string PythonVersionNotSupportMoreInfo {
+            get {
+                return ResourceManager.GetString("PythonVersionNotSupportMoreInfo", resourceCulture);
             }
         }
         
@@ -5855,7 +6215,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The associated project &apos;{0}&apos; has changed its configuration. These changes will not be reflected until you reset this interactive window..
+        ///   Looks up a localized string similar to The associated project &quot;{0}&quot; has changed its configuration. These changes will not be reflected until you reset this interactive window..
         /// </summary>
         public static string ReplProjectConfigurationChanged {
             get {
@@ -6026,6 +6386,24 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Workspace: {0}.
+        /// </summary>
+        public static string ReplWorkspaceCaption {
+            get {
+                return ResourceManager.GetString("ReplWorkspaceCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The associated workspace &quot;{0}&quot; has changed its configuration. These changes will not be reflected until you reset this interactive window..
+        /// </summary>
+        public static string ReplWorkspaceConfigurationChanged {
+            get {
+                return ResourceManager.GetString("ReplWorkspaceConfigurationChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View e&amp;xisting requirements.txt.
         /// </summary>
         public static string RequirementsTxtContentCollapsed {
@@ -6044,7 +6422,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Python package specification file &apos;{0}&apos; was detected in project &apos;{1}&apos;..
+        ///   Looks up a localized string similar to Python package specification file &quot;{0}&quot; was detected in project &quot;{1}&quot;..
         /// </summary>
         public static string RequirementsTxtCreateVirtualEnvInfoBarMessage {
             get {
@@ -6116,7 +6494,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Don&apos;t show this again.
+        ///   Looks up a localized string similar to Don&apos;t show this message again.
         /// </summary>
         public static string RequirementsTxtInfoBarProjectIgnoreAction {
             get {
@@ -6134,7 +6512,7 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to One or more packages listed in &apos;{0}&apos; of project &apos;{1}&apos; are missing from the &apos;{2}&apos; environment..
+        ///   Looks up a localized string similar to One or more packages listed in &quot;{0}&quot; of project &quot;{1}&quot; are missing from the &quot;{2}&quot; environment..
         /// </summary>
         public static string RequirementsTxtInstallPackagesInfoBarMessage {
             get {
@@ -6905,6 +7283,24 @@ namespace Microsoft.PythonTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to parse interpreter arguments &quot;{0}&quot;. Script will launch without them..
+        /// </summary>
+        public static string UnableToParseInterpreterArgs {
+            get {
+                return ResourceManager.GetString("UnableToParseInterpreterArgs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to parse script arguments &quot;{0}&quot;. Script will launch without them. .
+        /// </summary>
+        public static string UnableToParseScriptArgs {
+            get {
+                return ResourceManager.GetString("UnableToParseScriptArgs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please press Ctrl+C to copy the contents of this dialog and report this error..
         /// </summary>
         public static string UnexpectedError_Instruction {
@@ -7015,6 +7411,15 @@ namespace Microsoft.PythonTools {
         public static string UninstallPackages {
             get {
                 return ResourceManager.GetString("UninstallPackages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable unittest.
+        /// </summary>
+        public static string UnitTestEnableInfoBarAction {
+            get {
+                return ResourceManager.GetString("UnitTestEnableInfoBarAction", resourceCulture);
             }
         }
         
@@ -7378,6 +7783,15 @@ namespace Microsoft.PythonTools {
         public static string WorkspaceEnvironmentDescription {
             get {
                 return ResourceManager.GetString("WorkspaceEnvironmentDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to workspace.
+        /// </summary>
+        public static string WorkspaceText {
+            get {
+                return ResourceManager.GetString("WorkspaceText", resourceCulture);
             }
         }
         

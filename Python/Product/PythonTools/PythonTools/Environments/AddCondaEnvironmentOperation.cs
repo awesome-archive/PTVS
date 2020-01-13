@@ -25,7 +25,6 @@ using Microsoft.PythonTools.Logging;
 using Microsoft.PythonTools.Project;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
-using Microsoft.VisualStudio.Workspace;
 using Microsoft.VisualStudioTools;
 
 namespace Microsoft.PythonTools.Environments {
@@ -33,7 +32,7 @@ namespace Microsoft.PythonTools.Environments {
         private readonly IServiceProvider _site;
         private readonly ICondaEnvironmentManager _condaMgr;
         private readonly PythonProjectNode _project;
-        private readonly IWorkspace _workspace;
+        private readonly IPythonWorkspaceContext _workspace;
         private readonly string _envNameOrPath;
         private readonly string _actualName;
         private readonly string _envFilePath;
@@ -54,7 +53,7 @@ namespace Microsoft.PythonTools.Environments {
             IServiceProvider site,
             ICondaEnvironmentManager condaMgr,
             PythonProjectNode project,
-            IWorkspace workspace,
+            IPythonWorkspaceContext workspace,
             string envNameOrPath,
             string envFilePath,
             List<PackageSpec> packages,
@@ -112,9 +111,13 @@ namespace Microsoft.PythonTools.Environments {
         }
 
         private async Task CreateCondaEnvironmentAsync(CondaUI ui, ITaskHandler taskHandler, CancellationToken ct) {
+            bool createdCondaEnvNoPython = false;
+
             try {
                 var factory = await CreateFactoryAsync(ui, taskHandler, ct);
-                if (factory != null) {
+                if (factory == null) {
+                    createdCondaEnvNoPython = true;
+                } else {
                     await _site.GetUIThread().InvokeTask(async () => {
                         if (_project != null) {
                             _project.AddInterpreter(factory.Configuration.Id);
@@ -133,19 +136,25 @@ namespace Microsoft.PythonTools.Environments {
                             await InterpreterListToolWindow.OpenAtAsync(_site, factory);
                         }
                     });
+
+                    taskHandler?.Progress.Report(new TaskProgressData() {
+                        CanBeCanceled = false,
+                        ProgressText = Strings.CondaStatusCenterCreateProgressCompleted,
+                        PercentComplete = 100,
+                    });
+
+                    _statusBar?.SetText(Strings.CondaStatusBarCreateSucceeded.FormatUI(_actualName));
                 }
-
-                taskHandler?.Progress.Report(new TaskProgressData() {
-                    CanBeCanceled = false,
-                    ProgressText = Strings.CondaStatusCenterCreateProgressCompleted,
-                    PercentComplete = 100,
-                });
-
-                _statusBar?.SetText(Strings.CondaStatusBarCreateSucceeded.FormatUI(_actualName));
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 _statusBar?.SetText(Strings.CondaStatusBarCreateFailed.FormatUI(_actualName));
                 ui.OnErrorTextReceived(_condaMgr, ex.Message);
                 throw;
+            }
+
+            if (createdCondaEnvNoPython) {
+                ui.OnErrorTextReceived(_condaMgr, Strings.CondaEnvCreatedWithoutPython.FormatUI(_actualName));
+                _statusBar?.SetText(Strings.CondaEnvNotDetected);
+                throw new ApplicationException(Strings.CondaEnvNotDetected);
             }
         }
 

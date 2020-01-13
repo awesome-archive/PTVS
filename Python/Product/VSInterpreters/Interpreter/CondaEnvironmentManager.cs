@@ -36,7 +36,7 @@ namespace Microsoft.PythonTools.Interpreter {
             new KeyValuePair<string, string>("PYTHONUNBUFFERED", "1")
         };
 
-        internal CondaEnvironmentManager(string condaPath) {
+        private CondaEnvironmentManager(string condaPath) {
             CondaPath = condaPath;
         }
 
@@ -50,10 +50,14 @@ namespace Microsoft.PythonTools.Interpreter {
         public static CondaEnvironmentManager Create(IServiceProvider serviceProvider) {
             var condaPath = CondaUtils.GetRootCondaExecutablePath(serviceProvider);
             if (!string.IsNullOrEmpty(condaPath)) {
-                return new CondaEnvironmentManager(condaPath);
+                return Create(condaPath);
             }
 
             return null;
+        }
+
+        public static CondaEnvironmentManager Create(string condaPath) {
+            return new CondaEnvironmentManager(condaPath);
         }
 
         public async Task<bool> CreateAsync(string newEnvNameOrPath, IEnumerable<PackageSpec> packageSpecs, ICondaEnvironmentManagerUI ui, CancellationToken ct) {
@@ -291,8 +295,23 @@ namespace Microsoft.PythonTools.Interpreter {
             }
         }
 
+        private async Task<KeyValuePair<string, string>[]> GetEnvironmentVariables() {
+            var activationVars = await CondaUtils.GetActivationEnvironmentVariablesForRootAsync(CondaPath);
+            return activationVars.Union(UnbufferedEnv).ToArray();
+        }
+
         private async Task<CondaCreateDryRunResult> DoPreviewOperationAsync(IEnumerable<string> args, CancellationToken ct) {
-            using (var output = ProcessOutput.RunHiddenAndCapture(CondaPath, args.ToArray())) {
+            var envVars = await GetEnvironmentVariables();
+
+            // Note: conda tries to write temporary files to the current working directory
+            using (var output = ProcessOutput.Run(
+                CondaPath,
+                args.ToArray(),
+                Path.GetTempPath(),
+                envVars,
+                false,
+                null
+            )) {
                 if (!output.IsStarted) {
                     return null;
                 }
@@ -341,11 +360,14 @@ namespace Microsoft.PythonTools.Interpreter {
         ) {
             bool success = false;
             try {
+                var envVars = await GetEnvironmentVariables();
+
+                // Note: conda tries to write temporary files to the current working directory
                 using (var output = ProcessOutput.Run(
                     CondaPath,
                     args,
-                    Path.GetDirectoryName(CondaPath),
-                    UnbufferedEnv,
+                    Path.GetTempPath(),
+                    envVars,
                     false,
                     redirector ?? CondaEnvironmentManagerUIRedirector.Get(this, ui),
                     quoteArgs: false,

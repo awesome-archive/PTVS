@@ -39,7 +39,7 @@ VsPyProf* VsPyProf::Create(HMODULE pythonModule) {
             return nullptr;
     }
 
-    HMODULE vsPerf = LoadLibrary(buffer);
+    HMODULE vsPerf = LoadLibraryEx(buffer, 0, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if (vsPerf == 0) {
         // can't load VsPerf100
         return nullptr;
@@ -90,7 +90,7 @@ VsPyProf* VsPyProf::Create(HMODULE pythonModule) {
                 }
 
                 if ((major == 2 && (minor >= 4 && minor <= 7)) ||
-                    (major == 3 && (minor >= 0 && minor <= 7))) {
+                    (major == 3 && (minor >= 0 && minor <= 8))) {
                         return new VsPyProf(pythonModule,
                             major,
                             minor,
@@ -140,6 +140,8 @@ bool VsPyProf::GetUserToken(PyFrameObject* frameObj, DWORD_PTR& func, DWORD_PTR&
             filename = ((PyCodeObject36*)codeObj)->co_filename;
         } else if (PyCodeObject37::IsFor(MajorVersion, MinorVersion)) {
             filename = ((PyCodeObject37*)codeObj)->co_filename;
+        } else if (PyCodeObject38::IsFor(MajorVersion, MinorVersion)) {
+            filename = ((PyCodeObject38*)codeObj)->co_filename;
         }
         module = (DWORD_PTR)filename;
 
@@ -222,6 +224,9 @@ bool VsPyProf::GetUserToken(PyFrameObject* frameObj, DWORD_PTR& func, DWORD_PTR&
             } else if (PyCodeObject37::IsFor(MajorVersion, MinorVersion)) {
                 RegisterName(func, ((PyCodeObject37*)codeObj)->co_name, &moduleName);
                 lineno = ((PyCodeObject37*)codeObj)->co_firstlineno;
+            } else if (PyCodeObject38::IsFor(MajorVersion, MinorVersion)) {
+                RegisterName(func, ((PyCodeObject38*)codeObj)->co_name, &moduleName);
+                lineno = ((PyCodeObject38*)codeObj)->co_firstlineno;
             }
 
             // give the profiler the line number of this function
@@ -260,6 +265,9 @@ wstring VsPyProf::GetClassNameFromFrame(PyFrameObject* frameObj, PyObject *codeO
         } else if (PyCodeObject37::IsFor(MajorVersion, MinorVersion)) {
             argCount = ((PyCodeObject37*)codeObj)->co_argcount;
             argNames = (PyTupleObject*)((PyCodeObject37*)codeObj)->co_varnames;
+        } else if (PyCodeObject38::IsFor(MajorVersion, MinorVersion)) {
+            argCount = ((PyCodeObject38*)codeObj)->co_argcount;
+            argNames = (PyTupleObject*)((PyCodeObject38*)codeObj)->co_varnames;
         }
 
         if (argCount != 0 && argNames && argNames->ob_type == PyTuple_Type) {
@@ -305,6 +313,8 @@ wstring VsPyProf::GetClassNameFromSelf(PyObject* self, PyObject *codeObj) {
             nameObj = ((PyCodeObject36*)codeObj)->co_name;
         } else if (PyCodeObject37::IsFor(MajorVersion, MinorVersion)) {
             nameObj = ((PyCodeObject37*)codeObj)->co_name;
+        } else if (PyCodeObject38::IsFor(MajorVersion, MinorVersion)) {
+            nameObj = ((PyCodeObject38*)codeObj)->co_name;
         }
         GetNameAscii(nameObj, codeName);
 
@@ -345,11 +355,12 @@ void VsPyProf::GetModuleName(wstring name, wstring& finalName) {
 
             // Re-assemble to C:\Fob\Oar\Baz
             wchar_t newName[MAX_PATH];
+            newName[0] = '\0';
             _wmakepath_s(newName, drive, dir, nullptr, nullptr);
 
             // C:\Fob\Oar\Baz -> C, Fob\Oar, Baz
             _wsplitpath_s(newName, drive, _MAX_DRIVE, dir, _MAX_DIR, file, _MAX_FNAME, nullptr, 0);
-            finalName.append(file);	// finalName is now Baz, our package name
+            finalName.append(file);    // finalName is now Baz, our package name
 
             // re-assemble to C:\Fob\Oar\Baz
             _wmakepath_s(newName, drive, dir, file, nullptr);
@@ -408,7 +419,7 @@ bool VsPyProf::GetBuiltinToken(PyObject* codeObj, DWORD_PTR& func, DWORD_PTR& mo
         if (_registeredObjects.find(func) == _registeredObjects.end()) {
 
             _registeredObjects.insert(func);
-            ReferenceObject(codeObj);	 // keep alive the method def via the code object
+            ReferenceObject(codeObj);     // keep alive the method def via the code object
 
 
             wstring name, moduleName;
@@ -424,7 +435,7 @@ bool VsPyProf::GetBuiltinToken(PyObject* codeObj, DWORD_PTR& func, DWORD_PTR& mo
 
                 // In Python3k module methods apparently have the module as their self, modules don't 
                 // actually have any interesting methods so we can always filter.
-                if (type != PyModule_Type) {
+                if (type != nullptr && type != PyModule_Type) {
                     auto className = type->tp_name;
 
                     for (int i = 0; className[i]; i++) {
@@ -542,7 +553,8 @@ VsPyProf::VsPyProf(HMODULE pythonModule, int majorVersion, int minorVersion, Ent
     PyModule_Type(pyModuleType),
     PyInstance_Type(pyInstType),
     _asUnicode(asUnicode),
-    _unicodeGetLength(unicodeGetLength) {
+    _unicodeGetLength(unicodeGetLength), 
+    _refCount(0) {
 }
 
 VsPyProfThread::VsPyProfThread(VsPyProf* profiler) : _profiler(profiler), _depth(0) {

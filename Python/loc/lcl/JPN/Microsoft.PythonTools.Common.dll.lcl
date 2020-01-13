@@ -42,10 +42,13 @@
       </Item>
       <Item ItemId=";AddCondaEnvironmentFileHelp" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The environment file is typically named environment.yml and specifies the conda and pip packages to install when creating the conda environment.]]></Val>
+          <Val><![CDATA[Path to environment.yml file, which specifies the Conda and pip packages to install when creating the Conda environment.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[通常、環境ファイルは environment.yml という名前になり、Conda 環境を作成するときにインストールする conda パッケージと pip パッケージを指定します。]]></Val>
+            <Val><![CDATA[environment.yml ファイルへのパス。このファイルは、Conda 環境を作成するときにインストールする Conda パッケージと pip パッケージを指定します。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The environment file is typically named environment.yml and specifies the Conda and pip packages to install when creating the Conda environment.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -54,6 +57,15 @@
           <Val><![CDATA[Conda environment file '{0}' does not exist.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Conda 環境ファイル '{0}' が存在しません。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";AddCondaEnvironmentFileName" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Environment file path]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[環境のファイル パス]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -111,10 +123,13 @@
       </Item>
       <Item ItemId=";AddCondaEnvironmentPreviewInProgress" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Preview in progress...]]></Val>
+          <Val><![CDATA[Building preview...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[プレビューが進行中です...]]></Val>
+            <Val><![CDATA[プレビューをビルドしています...]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Preview in progress...]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -154,11 +169,32 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";AddCondaPackagesBrowseButton" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Add packages]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[パッケージを追加]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";AddCondaPackagesHelpText" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[List of conda packages to install when creating the conda environment. Entries should be separated by spaces.]]></Val>
+          <Val><![CDATA[List of Conda packages to install when creating the Conda environment. Entries should be separated by spaces. Example: numpy pandas]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Conda 環境を作成するときにインストールする Conda パッケージの一覧です。エントリは、スペースで区切る必要があります。]]></Val>
+            <Val><![CDATA[Conda 環境を作成するときにインストールする Conda パッケージの一覧です。エントリは、スペースで区切る必要があります。例: numpy pandas]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[List of Conda packages to install when creating the Conda environment. Entries should be separated by spaces.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";AddCondaPackagesName" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Package names]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[パッケージ名]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -174,10 +210,13 @@
       </Item>
       <Item ItemId=";AddCondaPackagesWatermark" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[ex. numpy pandas]]></Val>
+          <Val><![CDATA[Example: "numpy pandas". If no packages are listed, Python will be installed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[例: numpy pandas]]></Val>
+            <Val><![CDATA[例: "numpy pandas"。一覧にパッケージがない場合は、Python がインストールされます]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[ex. numpy pandas]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -217,6 +256,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";AddEnvironmentAddButtonAutomationName" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Add]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[追加]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";AddEnvironmentCancelButton" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[_Cancel]]></Val>
@@ -235,11 +283,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";AddEnvironmentComboListEntry" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Add Environment...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[環境を追加...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";AddEnvironmentCreateButton" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[C_reate]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[作成(_R)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";AddEnvironmentCreateButtonAutomationName" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Create]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[作成]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -480,10 +546,13 @@
       </Item>
       <Item ItemId=";AddExistingEnvironmentWindowsInterpreterPathLabel" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Windo_wed interpreter]]></Val>
+          <Val><![CDATA[Windo_wed interpreter (optional)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ウィンドウ表示のインタープリター(_W)]]></Val>
+            <Val><![CDATA[ウィンドウ表示のインタープリター (省略可能)(_W)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Windo_wed interpreter]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -505,6 +574,24 @@
           <Prev Cat="Text">
             <Val><![CDATA[To install a new Python interpreter, open Visual Studio Installer and install it from there.]]></Val>
           </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";AddInstalledEnvironmentInstallButton" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[_Install]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[インストール(_I)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";AddInstalledEnvironmentInstallButtonAutomationName" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Install]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[インストール]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -538,23 +625,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";AddInstalledEnvironmentLaunch" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Install]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[インストール]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Open Visual Studio Installer]]></Val>
-          </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";AddInstalledEnvironmentNone" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[(none)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[(なし)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";AddInstalledEnvironmentNoneAvailable" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[(none available)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(使用不可)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -591,6 +675,15 @@
           <Val><![CDATA[Change virtual environment _location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[仮想環境の場所を変更する(_L)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";AddVirtualEnvironmentDescriptionName" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Environment description]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[環境の説明]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -693,10 +786,13 @@
       </Item>
       <Item ItemId=";AddVirtualEnvironmentPreviewInProgress" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please wait...]]></Val>
+          <Val><![CDATA[Building preview...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[お待ちください...]]></Val>
+            <Val><![CDATA[プレビューをビルドしています...]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please wait...]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -711,10 +807,13 @@
       </Item>
       <Item ItemId=";AddVirtualEnvironmentRequirementsPathLabel" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Install packages fr_om file]]></Val>
+          <Val><![CDATA[Install packages fr_om file (optional)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ファイルからのインストール パッケージ(_O)]]></Val>
+            <Val><![CDATA[ファイルからパッケージをインストール (省略可能)(_O)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Install packages fr_om file]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1153,6 +1252,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";CondaEnvCreatedWithoutPython" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Conda environment '{0}' was created, but it will not be detected by Visual Studio because it does not contain Python.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Conda 環境 '{0}' が作成されましたが、Python が含まれていないため Visual Studio に検出されません。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";CondaEnvNotDetected" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Conda environment not detected]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Conda 環境が検出されません]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";CondaEnvironmentDescription" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Conda Environment]]></Val>
@@ -1260,36 +1377,36 @@
       </Item>
       <Item ItemId=";CondaInfoBarCreateNewMessage" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The project '{0}' has a conda environment.yml file, but no conda environments.]]></Val>
+          <Val><![CDATA[The project "{0}" has a Conda environment.yml file, but no Conda environments.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[プロジェクト '{0}' には conda の environment.yml ファイルが含まれていますが、conda 環境がありません。]]></Val>
+            <Val><![CDATA[プロジェクト "{0}" には Conda の environment.yml ファイルが含まれていますが、Conda 環境がありません。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[The project '{0}' has a conda environment.yml file, but no conda environments. Would you like to create one?]]></Val>
+            <Val><![CDATA[The project '{0}' has a conda environment.yml file, but no conda environments.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";CondaInfoBarProjectIgnoreAction" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Don't show this again]]></Val>
+          <Val><![CDATA[Don't show this message again]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[このメッセージを再度表示しない]]></Val>
+            <Val><![CDATA[今後、このメッセージを表示しない]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Don't Show This Again]]></Val>
+            <Val><![CDATA[Don't show this again]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";CondaInfoBarRecreateMessage" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The project '{0}' has a reference to a missing conda environment '{1}'.]]></Val>
+          <Val><![CDATA[The project "{0}" has a reference to a missing Conda environment "{1}".]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[存在しない conda 環境 '{1}' への参照がプロジェクト '{0}' に含まれています。]]></Val>
+            <Val><![CDATA[存在しない Conda 環境 "{1}" への参照がプロジェクト "{0}" に含まれています。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[The project '{0}' has a reference to a missing conda environment '{1}'. Would you like to create it?]]></Val>
+            <Val><![CDATA[The project '{0}' has a reference to a missing conda environment '{1}'.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1350,28 +1467,37 @@
       </Item>
       <Item ItemId=";CondaStatusBarCreateFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Failed to create conda environment '{0}']]></Val>
+          <Val><![CDATA[Failed to create Conda environment "{0}"]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Conda 環境 '{0}' を作成できませんでした]]></Val>
+            <Val><![CDATA[Conda 環境 "{0}" を作成できませんでした]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Failed to create conda environment '{0}']]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";CondaStatusBarCreateStarted" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Creating conda environment '{0}']]></Val>
+          <Val><![CDATA[Creating Conda environment "{0}"]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Conda 環境 '{0}' を作成しています]]></Val>
+            <Val><![CDATA[Conda 環境 "{0}" を作成しています]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Creating conda environment '{0}']]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";CondaStatusBarCreateSucceeded" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Successfully created conda environment '{0}']]></Val>
+          <Val><![CDATA[Successfully created Conda environment "{0}"]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Conda 環境 '{0}' が正常に作成されました]]></Val>
+            <Val><![CDATA[Conda 環境 "{0}" が正常に作成されました]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Successfully created conda environment '{0}']]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1422,10 +1548,13 @@
       </Item>
       <Item ItemId=";CondaStatusCenterCreateTitle" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Create conda environment '{0}']]></Val>
+          <Val><![CDATA[Create Conda environment "{0}"]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Conda 環境 '{0}' の作成]]></Val>
+            <Val><![CDATA[Conda 環境 "{0}" の作成]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Create conda environment '{0}']]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2090,7 +2219,7 @@
         <Str Cat="Text">
           <Val><![CDATA[{0} Interactive Window]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} Interactive ウィンドウ]]></Val>
+            <Val><![CDATA[{0} インタラクティブ ウィンドウ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2480,7 +2609,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Python debug interactive window. Type $help for a list of commands.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Python デバッグの対話型ウィンドウ。コマンドの一覧については、$help と入力してください。]]></Val>
+            <Val><![CDATA[Python デバッグのインタラクティブ ウィンドウ。コマンドの一覧については、$help と入力してください。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3223,11 +3352,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";ErrorOpeningCommandPrompt" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred opening command prompt.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[コマンド プロンプトを開く処理でエラーが発生しました。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";ErrorOpeningInteractiveWindow" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred opening this interactive window.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[この対話型ウィンドウを開いているときにエラーが発生しました。]]></Val>
+            <Val><![CDATA[このインタラクティブ ウィンドウを開いているときにエラーが発生しました。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";ErrorOpeningPowershell" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred opening PowerShell.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[PowerShell を開く処理でエラーが発生しました。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3250,6 +3397,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";ErrorStartingInterpreter" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred starting this interpreter.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[このインタープリターの開始でエラーが発生しました。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";ErrorTaskItemZipArchiveNotSupportedCaption" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot open file]]></Val>
@@ -3264,6 +3420,15 @@
           <Val><![CDATA[Opening source files contained in .zip archives is not supported]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[.zip アーカイブに含まれるソース ファイルを開くことはサポートされていません]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";ErrorTestCaseNotFound" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Testcase not found for test result: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[テスト結果のテスト ケースが見つかりません: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3542,7 +3707,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to collect files to publish.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[発行するファイルを収集できませんでした。]]></Val>
+            <Val><![CDATA[公開するファイルを収集できませんでした。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3551,7 +3716,7 @@
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while collecting files to publish. Review the details below and retry or cancel the operation.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[発行するファイルの収集中にエラーが発生しました。下の詳細を確認し、操作を再試行するか取り消してください。]]></Val>
+            <Val><![CDATA[公開するファイルの収集中にエラーが発生しました。下の詳細を確認し、操作を再試行するか取り消してください。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4825,6 +4990,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";ProjectText" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[プロジェクト]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";PtvsdDisableCaption" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Use the legacy debugger]]></Val>
@@ -4898,7 +5072,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Publishing folder location ({0}): ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[フォルダーの場所 ({0}) を発行しています: ]]></Val>
+            <Val><![CDATA[フォルダーの場所 ({0}) を公開しています: ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4925,7 +5099,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Publishing Python projects has recently changed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Python プロジェクトの発行は、最近変更されました。]]></Val>
+            <Val><![CDATA[Python プロジェクトの公開は、最近変更されました。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4934,7 +5108,61 @@
         <Str Cat="Text">
           <Val><![CDATA[These changes will allow you to deploy more reliably and quickly, but first you may need to configure your project or deployment target.]D;]A;]D;]A;When you publish, we will no longer automatically generate a web.config file. You can add one using Add New Item and customize as necessary for your site.]D;]A;]D;]A;There are no restrictions on the version of Python you may be using when you deploy, however, we will no longer include virtual environments or the Python runtime when you deploy. Only libraries that are directly included in your project will be published.]D;]A;]D;]A;Please refer to <a href="https://aka.ms/pythononappservice">aka.ms/PythonOnAppService</a> for information about configuring and publishing to Azure App Service.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[これらの変更により、デプロイの信頼性と速度が向上しますが、最初にプロジェクトまたはデプロイ ターゲットを構成する必要のある場合があります。]D;]A;]D;]A;発行すると、web.config ファイルは自動的には生成されなくなります。このファイルは、[新しい項目の追加]5D; を使って追加し、サイトの必要に合わせてカスタマイズすることができます。]D;]A;]D;]A;デプロイ時に使用できる Python のバージョンに制限はありませんが、デプロイ時に仮想環境または Python ランタイムが組み込まれることはなくなります。プロジェクトに直接組み込んだライブラリだけが発行されます。]D;]A;]D;]A;Azure App Service の構成と発行に関する情報は、<a href="https://aka.ms/pythononappservice">aka.ms/PythonOnAppService</a> をご覧ください。]]></Val>
+            <Val><![CDATA[これらの変更により、デプロイの信頼性と速度が向上しますが、最初にプロジェクトまたはデプロイ ターゲットを構成する必要のある場合があります。]D;]A;]D;]A;公開すると、web.config ファイルは自動的には生成されなくなります。このファイルは、[新しい項目の追加]5D; を使って追加し、サイトの必要に合わせてカスタマイズすることができます。]D;]A;]D;]A;デプロイ時に使用できる Python のバージョンに制限はありませんが、デプロイ時に仮想環境または Python ランタイムが組み込まれることはなくなります。プロジェクトに直接組み込んだライブラリだけが公開されます。]D;]A;]D;]A;Azure App Service の構成と公開に関する情報は、<a href="https://aka.ms/pythononappservice">aka.ms/PythonOnAppService</a> をご覧ください。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PyTestEnableInfoBarAction" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable pytest]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[pytest を有効にする]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PyTestInstallAndEnableInfoBarAction" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Install and enable pytest]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[pytest をインストールして有効にする]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PyTestInstallInfoBarAction" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Install pytest]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[pytest をインストールする]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PyTestInstalledConfigurationFileFound" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A pytest configuration file was detected in the {0} {1}, but pytest is not enabled.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} {1} で pytest 構成ファイルが検出されましたが、pytest が有効になっていません。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PyTestNotInstalled" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Pytest is enabled in the {0} {1}, but it is not installed in the active environment.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[pytest は {0} {1} で有効になっていますが、アクティブな環境にインストールされていません。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PyTestNotInstalledConfigurationFileFound" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A pytest configuration file was detected in the {0} {1}, but pytest is not installed or enabled.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[pytest 構成ファイルが {0} {1} で検出されましたが、pytest がインストールされていないか、有効になっていません。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4948,11 +5176,38 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";PytestInvalidTestSource" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Invalid source in test: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[テストのソースが無効です: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PytestResultsXmlNotFound" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Results for pytest not found {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[pytest の結果が見つかりませんでした {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";PythonDebugPropertyPageLabel" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Debug]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[デバッグ]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonDiscoveryResultsNotFound" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Discovery results file '{0}' was not found.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[検出結果ファイル '{0}' が見つかりませんでした。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5187,6 +5442,135 @@
           <Val><![CDATA[Publish]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[公開]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonTestDiscovererStartedMessage" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Starting {0} discovery for the {1} {2}. This can take up to {3} seconds.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{1} {2} の {0} の検出を開始しています。これには、最大 {3} 秒かかることがあります。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonTestDiscovererTimeoutErrorMessage" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Python test discovery timeout, possibly due to blocking call. Go to https://aka.ms/VSTestExplorerPython for more details on test discovery.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Python テスト検出がタイムアウトになりました。呼び出しのブロックが原因の可能性があります。テスト検出の詳細については、https://aka.ms/VSTestExplorerPython をご覧ください。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonTestFileDetected" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A file which may contain Python tests was detected in the {0} {1}, but the test framework is disabled.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Python テストが含まれる可能性のあるファイルが {0} {1} で検出されましたが、テスト フレームワークが無効になっています。]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[A file containing Python tests was detected in the {0} {1}, but the test framework is disabled.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonTestFrameworkIgnoreInfoBarAction" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Don't show this message again]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[今後、このメッセージを表示しない]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonTestPropertyPageFrameworkHelpText" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Test framework]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[テスト フレームワーク]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonTestPropertyPageFrameworkLabel" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Test _framework:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[テスト フレームワーク(_F):]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonTestPropertyPageLabel" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Test]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[テスト]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonTestPropertyPageUnittestPatternHelpText" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Pattern]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[パターン]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonTestPropertyPageUnittestPatternLabel" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[_Pattern:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[パターン(_P):]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonTestPropertyPageUnittestRootDirectoryHelpText" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Root directory]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ルート ディレクトリ]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonTestPropertyPageUnittestRootDirectoryLabel" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Root _directory:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ルート ディレクトリ(_D):]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonVersionNotSupportMoreInfo" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[More info]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[詳細情報]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonVersionNotSupportedDontShowMessageAgain" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Don't show this message again]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[このメッセージを今後表示しない]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PythonVersionNotSupportedInfoBarText" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[You are using Python {0} and some features might not work because Visual Studio doesn't support it yet.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Python {0} を使用していますが、Visual Studio でまだサポートされていないため、一部の機能が動作しない可能性があります。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5636,7 +6020,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Current interactive window is disconnected.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[現在の対話型ウィンドウは切断されています。]]></Val>
+            <Val><![CDATA[現在のインタラクティブ ウィンドウは切断されています。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5645,7 +6029,7 @@
         <Str Cat="Text">
           <Val><![CDATA[The interactive window has become disconnected from the Python process. Please reset the window.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[対話型ウィンドウが Python プロセスから切断されました。ウィンドウをリセットしてください。]]></Val>
+            <Val><![CDATA[インタラクティブ ウィンドウが Python プロセスから切断されました。ウィンドウをリセットしてください。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5654,7 +6038,7 @@
         <Str Cat="Text">
           <Val><![CDATA[The interactive window has encountered an issue. Please reset the window]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[対話型ウィンドウで問題が発生しました。ウィンドウをリセットしてください]]></Val>
+            <Val><![CDATA[インタラクティブ ウィンドウで問題が発生しました。ウィンドウをリセットしてください]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5672,7 +6056,7 @@
         <Str Cat="Text">
           <Val><![CDATA[The interactive window could not be started because the associated Python environment could not be found.]D;]A;]D;]A;If this version of Python has recently been uninstalled, you can close this window.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[関連付けられた Python 環境が見つからなかったため、対話型ウィンドウを開始できませんでした。]D;]A;]D;]A;このバージョンの Python を最近アンインストールした場合は、このウィンドウを閉じることができます。]]></Val>
+            <Val><![CDATA[関連付けられた Python 環境が見つからなかったため、インタラクティブ ウィンドウを開始できませんでした。]D;]A;]D;]A;このバージョンの Python を最近アンインストールした場合は、このウィンドウを閉じることができます。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5690,7 +6074,7 @@
         <Str Cat="Text">
           <Val><![CDATA[&#x1b;[94;21m{0} interactive window &#x1b;[m[PTVS {1}-{2}]5D;]D;]A;Type $help for a list of commands.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[&#x1b;[94;21m{0} 対話型ウィンドウ &#x1b;[m[PTVS {1}-{2}]5D;]D;]A;「$help」を入力すると、コマンドの一覧が表示されます。]]></Val>
+            <Val><![CDATA[&#x1b;[94;21m{0} インタラクティブ ウィンドウ &#x1b;[m[PTVS {1}-{2}]5D;]D;]A;「$help」を入力すると、コマンドの一覧が表示されます。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5717,7 +6101,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Cannot change module because the interactive window needs to be reset.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[対話型ウィンドウをリセットする必要があるため、モジュールを変更できません。]]></Val>
+            <Val><![CDATA[インタラクティブ ウィンドウをリセットする必要があるため、モジュールを変更できません。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5735,7 +6119,7 @@
         <Str Cat="Text">
           <Val><![CDATA[The interactive window has not yet started.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[対話型ウィンドウがまだ開始されていません。]]></Val>
+            <Val><![CDATA[インタラクティブ ウィンドウがまだ開始されていません。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5744,17 +6128,20 @@
         <Str Cat="Text">
           <Val><![CDATA[An error occurred opening the interactive window.]D;]A;]D;]A;{0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[対話型ウィンドウを開いている時にエラーが発生しました。]D;]A;]D;]A;{0}]]></Val>
+            <Val><![CDATA[インタラクティブ ウィンドウを開いている時にエラーが発生しました。]D;]A;]D;]A;{0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ReplProjectConfigurationChanged" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The associated project '{0}' has changed its configuration. These changes will not be reflected until you reset this interactive window.]]></Val>
+          <Val><![CDATA[The associated project "{0}" has changed its configuration. These changes will not be reflected until you reset this interactive window.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[関連付けられたプロジェクト '{0}' の構成が変更されました。これらの変更は、この対話型ウィンドウをリセットするまでは、反映されません。]]></Val>
+            <Val><![CDATA[関連付けられたプロジェクト "{0}" の構成が変更されました。これらの変更は、このインタラクティブ ウィンドウをリセットするまでは、反映されません。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The associated project '{0}' has changed its configuration. These changes will not be reflected until you reset this interactive window.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5846,7 +6233,7 @@
         <Str Cat="Text">
           <Val><![CDATA[This directory can contain a set of initialization scripts (Python files) for the Python interactive window in ]D;]A;Visual Studio. Feel free to add your own files to import modules, define functions, or whatever you like.]D;]A;]D;]A;Whenever the interactive window for this environment is reset, each .py file in this directory will be ]D;]A;executed in alphabetical order.]D;]A;]D;]A;Visit http://aka.ms/ptvsdocs for more information about what interactive window functionality can be ]D;]A;modified from these scripts.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[このディレクトリには、Visual Studio の Python 対話型ウィンドウ用の初期化スクリプト (Python ファイル) の]D;]A;セットを含めることができます。独自のファイルを自由に追加して、モジュールのインポートや、関数の定義など、必要な処理を行うことができます。]D;]A;]D;]A;この環境の対話型ウィンドウをリセットすると、このディレクトリにある各 .py ファイルが]D;]A;英字順に実行されます。]D;]A;]D;]A;これらのスクリプトから変更できる対話型ウィンドウの機能について詳しくは、http://aka.ms/ptvsdocs を]D;]A;ご覧ください。]]></Val>
+            <Val><![CDATA[このディレクトリには、Visual Studio の Python インタラクティブ ウィンドウ用の初期化スクリプト (Python ファイル) の]D;]A;セットを含めることができます。独自のファイルを自由に追加して、モジュールのインポートや、関数の定義など、必要な処理を行うことができます。]D;]A;]D;]A;この環境のインタラクティブ ウィンドウをリセットすると、このディレクトリにある各 .py ファイルが]D;]A;英字順に実行されます。]D;]A;]D;]A;これらのスクリプトから変更できるインタラクティブ ウィンドウの機能について詳しくは、http://aka.ms/ptvsdocs を]D;]A;ご覧ください。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5900,7 +6287,25 @@
         <Str Cat="Text">
           <Val><![CDATA[Congratulations, you opened over 2 billion interactive windows this session! Now you need to restart Visual Studio to open any more.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[このセッションで開いた対話型ウィンドウの数が 20 億個を超えました。これ以上開くには、Visual Studio を再起動する必要があります。]]></Val>
+            <Val><![CDATA[このセッションで開いたインタラクティブ ウィンドウの数が 20 億個を超えました。これ以上開くには、Visual Studio を再起動する必要があります。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";ReplWorkspaceCaption" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Workspace: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ワークスペース: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";ReplWorkspaceConfigurationChanged" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The associated workspace "{0}" has changed its configuration. These changes will not be reflected until you reset this interactive window.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[関連付けられたワークスペース "{0}" の構成が変更されました。これらの変更は、このインタラクティブ ウィンドウをリセットするまでは、反映されません。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5943,12 +6348,12 @@
       </Item>
       <Item ItemId=";RequirementsTxtCreateVirtualEnvInfoBarMessage" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Python package specification file '{0}' was detected in project '{1}'.]]></Val>
+          <Val><![CDATA[Python package specification file "{0}" was detected in project "{1}".]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[プロジェクト '{1}' で Python パッケージ仕様ファイル '{0}' が検出されました。]]></Val>
+            <Val><![CDATA[プロジェクト "{1}" で Python パッケージ仕様ファイル "{0}" が検出されました。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Package specification file '{0}' was detected in project '{1}'. Would you like to add a virtual environment?]]></Val>
+            <Val><![CDATA[Python package specification file '{0}' was detected in project '{1}'.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -6024,24 +6429,24 @@
       </Item>
       <Item ItemId=";RequirementsTxtInfoBarProjectIgnoreAction" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Don't show this again]]></Val>
+          <Val><![CDATA[Don't show this message again]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[このメッセージを再度表示しない]]></Val>
+            <Val><![CDATA[今後、このメッセージを表示しない]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Don't Show This Again]]></Val>
+            <Val><![CDATA[Don't show this again]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";RequirementsTxtInstallPackagesInfoBarMessage" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[One or more packages listed in '{0}' of project '{1}' are missing from the '{2}' environment.]]></Val>
+          <Val><![CDATA[One or more packages listed in "{0}" of project "{1}" are missing from the "{2}" environment.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[プロジェクト '{1}' の '{0}' にリストされている 1 つ以上のパッケージが、'{2}' 環境にありません。]]></Val>
+            <Val><![CDATA[プロジェクト "{1}" の "{0}" にリストされている 1 つ以上のパッケージが、"{2}" 環境にありません。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[One or more packages listed in '{0}' of project '{1}' are missing. Would you like to install packages in the '{2}' environment?]]></Val>
+            <Val><![CDATA[One or more packages listed in '{0}' of project '{1}' are missing from the '{2}' environment.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -6919,6 +7324,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";UnitTestEnableInfoBarAction" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable unittest]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[unittest を有効にする]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";UnknownRoleTypeException" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unknown role type: {0}]]></Val>
@@ -7275,6 +7689,15 @@
           <Val><![CDATA[Workspace Environment]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[ワークスペース環境]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";WorkspaceText" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[workspace]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ワークスペース]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

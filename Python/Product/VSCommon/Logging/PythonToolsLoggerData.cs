@@ -79,6 +79,7 @@ namespace Microsoft.PythonTools.Logging {
 
     static class AnalysisInitializeReasons {
         public const string Project = "Project";
+        public const string Workspace = "Workspace";
         public const string Interactive = "Interactive";
         public const string Default = "Default";
     }
@@ -113,6 +114,11 @@ namespace Microsoft.PythonTools.Logging {
         public bool ExpressionFound { get; set; }
     }
 
+    static class InfoBarContexts {
+        public const string Project = "Project";
+        public const string Workspace = "Workspace";
+    }
+
     static class CondaEnvCreateInfoBarActions {
         public const string Prompt = "Prompt";
         public const string Create = "Create";
@@ -127,6 +133,7 @@ namespace Microsoft.PythonTools.Logging {
     sealed class CondaEnvCreateInfoBarInfo : PythonToolsLoggerData {
         public string Reason { get; set; }
         public string Action { get; set; }
+        public string Context { get; set; }
     }
 
     static class VirtualEnvCreateInfoBarActions {
@@ -137,6 +144,21 @@ namespace Microsoft.PythonTools.Logging {
 
     sealed class VirtualEnvCreateInfoBarInfo : PythonToolsLoggerData {
         public string Action { get; set; }
+        public string Context { get; set; }
+    }
+
+    sealed class ConfigureTestFrameworkInfoBarInfo : PythonToolsLoggerData {
+        public string Action { get; set; }
+        public string Context { get; set; }
+    }
+
+    static class ConfigureTestFrameworkInfoBarActions {
+        public const string Prompt = "Prompt";
+        public const string InstallPytest = "InstallPytest";
+        public const string EnablePytest = "EnablePytest";
+        public const string EnableUnitTest = "EnableUnittest";
+        public const string EnableAndInstallPytest = "EnableAndInstallPytest";
+        public const string Ignore = "Ignore";
     }
 
     static class PackageInstallInfoBarActions {
@@ -145,8 +167,21 @@ namespace Microsoft.PythonTools.Logging {
         public const string Ignore = "Ignore";
     }
 
+    sealed class PythonVersionNotSupportedInfoBarInfo : PythonToolsLoggerData {
+        public string Action { get; set; }
+        public string Context { get; set; }
+        public string PythonVersion { get; set; }
+    }
+
+    static class PythonVersionNotSupportedInfoBarAction {
+        public const string Prompt = "Prompt";
+        public const string MoreInfo = "MoreInfo";
+        public const string Ignore = "Ignore";
+    }
+
     sealed class PackageInstallInfoBarInfo : PythonToolsLoggerData {
         public string Action { get; set; }
+        public string Context { get; set; }
     }
 
     sealed class CreateCondaEnvInfo : PythonToolsLoggerData {
@@ -175,5 +210,13 @@ namespace Microsoft.PythonTools.Logging {
         public string Architecture { get; set; }
         public bool Custom { get; set; }
         public bool Global { get; set; }
+    }
+
+    sealed class SelectEnvFromToolbarInfo : PythonToolsLoggerData {
+        [PiiProperty]
+        public string InterpreterId { get; set; }
+        public string Architecture { get; set; }
+        public string Version { get; set; }
+        public bool IsIronPython { get; set; }
     }
 }

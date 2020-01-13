@@ -57,9 +57,7 @@ namespace PythonToolsUITests {
             return app.SelectDefaultInterpreter(
                 PythonPaths.Python37 ?? PythonPaths.Python37_x64 ??
                 PythonPaths.Python36 ?? PythonPaths.Python36_x64 ??
-                PythonPaths.Python35 ?? PythonPaths.Python35_x64 ??
-                PythonPaths.Python34 ?? PythonPaths.Python34_x64 ??
-                PythonPaths.Python33 ?? PythonPaths.Python33_x64
+                PythonPaths.Python35 ?? PythonPaths.Python35_x64
             );
         }
 
@@ -329,13 +327,10 @@ namespace PythonToolsUITests {
             using (var dis = InitPython3(app)) {
                 var pm = app.OptionsService.GetPackageManagers(dis.CurrentDefault).FirstOrDefault();
                 if (pm.GetInstalledPackageAsync(new PackageSpec("virtualenv"), CancellationTokens.After60s).WaitAndUnwrapExceptions().IsValid) {
-                    pm.UninstallAsync(new PackageSpec("virtualenv"), new TestPackageManagerUI(), CancellationTokens.After60s).WaitAndUnwrapExceptions();
+                    if (!pm.UninstallAsync(new PackageSpec("virtualenv"), new TestPackageManagerUI(), CancellationTokens.After60s).WaitAndUnwrapExceptions()) {
+                        Assert.Fail("Failed to uninstall 'virtualenv' from {0}", dis.CurrentDefault.Configuration.GetPrefixPath());
+                    }
                 }
-
-                Assert.AreEqual(0, Microsoft.PythonTools.Analysis.ModulePath.GetModulesInLib(dis.CurrentDefault.Configuration)
-                    .Count(mp => mp.FullName == "virtualenv"),
-                    string.Format("Failed to uninstall 'virtualenv' from {0}", dis.CurrentDefault.Configuration.PrefixPath)
-                );
 
                 var project = CreateTemporaryProject(app);
 
@@ -372,7 +367,12 @@ namespace PythonToolsUITests {
         }
 
         public void ProjectAddExistingVEnvLocal(PythonVisualStudioApp app) {
-            var python = PythonPaths.Python37 ?? PythonPaths.Python36 ?? PythonPaths.Python35 ?? PythonPaths.Python34 ?? PythonPaths.Python33;
+            var python =    PythonPaths.Python37_x64 ??
+                            PythonPaths.Python37 ??
+                            PythonPaths.Python36_x64 ??
+                            PythonPaths.Python36 ??
+                            PythonPaths.Python35_x64 ??
+                            PythonPaths.Python35;
             python.AssertInstalled();
 
             var project = CreateTemporaryProject(app);
@@ -394,7 +394,12 @@ version = 3.{1}.0", python.PrefixPath, python.Version.ToVersion().Minor));
         }
 
         public void ProjectAddCustomEnvLocal(PythonVisualStudioApp app) {
-            var python = PythonPaths.Python37 ?? PythonPaths.Python36 ?? PythonPaths.Python35 ?? PythonPaths.Python34 ?? PythonPaths.Python33;
+            var python =    PythonPaths.Python37_x64 ??
+                            PythonPaths.Python37 ??
+                            PythonPaths.Python36_x64 ??
+                            PythonPaths.Python36 ??
+                            PythonPaths.Python35_x64 ??
+                            PythonPaths.Python35;
             python.AssertInstalled();
 
             var project = CreateTemporaryProject(app);
@@ -411,7 +416,12 @@ version = 3.{1}.0", python.PrefixPath, python.Version.ToVersion().Minor));
         }
 
         public void ProjectAddExistingEnv(PythonVisualStudioApp app) {
-            var python = PythonPaths.Python37 ?? PythonPaths.Python36 ?? PythonPaths.Python35 ?? PythonPaths.Python34 ?? PythonPaths.Python33;
+            var python =    PythonPaths.Python37_x64 ??
+                            PythonPaths.Python37 ??
+                            PythonPaths.Python36_x64 ??
+                            PythonPaths.Python36 ??
+                            PythonPaths.Python35_x64 ??
+                            PythonPaths.Python35;
             python.AssertInstalled();
 
             var project = CreateTemporaryProject(app);
@@ -473,6 +483,23 @@ version = 3.{1}.0", python.PrefixPath, python.Version.ToVersion().Minor));
             }
         }
 
+        public void WorkspaceCreateCondaEnvFromNoPackages(PythonVisualStudioApp app) {
+            var globalDefault37 = PythonPaths.Python37_x64 ?? PythonPaths.Python37;
+            globalDefault37.AssertInstalled();
+
+            using (var dis = app.SelectDefaultInterpreter(globalDefault37)) {
+                var workspaceFolder = CreateAndOpenWorkspace(app, globalDefault37);
+
+                // Create conda environment dialog with no packages
+                app.CreateWorkspaceCondaEnvironment("", null, null, out _, out string envPath, out string envDesc);
+                try {
+                    CheckSwitcherEnvironment(app, envDesc);
+                } finally {
+                    FileUtils.DeleteDirectory(envPath);
+                }
+            }
+        }
+
         public void WorkspaceCreateCondaEnvFromEnvFile(PythonVisualStudioApp app) {
             var globalDefault37 = PythonPaths.Python37_x64 ?? PythonPaths.Python37;
             globalDefault37.AssertInstalled();
@@ -526,7 +553,7 @@ version = 3.{1}.0", python.PrefixPath, python.Version.ToVersion().Minor));
                 // Note: we need to use a real virtual env for this, because the
                 // workspace factory provider runs the env's python.exe.
                 var envPath = TestData.GetTempPath("testenv");
-                CreateVirtualEnvironment(basePython, envPath);
+                basePython.CreateVirtualEnv(envPath);
 
                 // Add existing virtual environment dialog, custom path to a
                 // virtual env located outside of workspace root.
@@ -728,13 +755,6 @@ dependencies:
             return envFilePath;
         }
 
-        private static void CreateVirtualEnvironment(PythonVersion pythonVersion, string envPath) {
-            using (var output = ProcessOutput.RunHiddenAndCapture(pythonVersion.Configuration.InterpreterPath, "-m", "venv", envPath)) {
-                Assert.IsTrue(output.Wait(TimeSpan.FromMinutes(3)));
-                Assert.AreEqual(0, output.ExitCode);
-                Assert.IsTrue(File.Exists(Path.Combine(envPath, "Scripts", "python.exe")));
-            }
-        }
 
         private void CheckSwitcherEnvironment(PythonVisualStudioApp app, string expectedDescription) {
             var expectedVisible = expectedDescription != null;

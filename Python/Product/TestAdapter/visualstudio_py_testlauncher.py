@@ -19,6 +19,7 @@ from __future__ import with_statement
 __author__ = "Microsoft Corporation <ptvshelp@microsoft.com>"
 __version__ = "3.0.0.0"
 
+import io
 import os.path
 import sys
 import json
@@ -38,13 +39,6 @@ try:
 except:
     from unittest import _TextTestResult as TextTestResult
     _IS_OLD_UNITTEST = True
-
-if sys.version_info[0] < 3:
-    if sys.version_info[:2] < (2, 6):
-        from codecs import open
-    else:
-        from io import open
-
 
 class _TestOutput(object):
     """file like object which redirects output to the repl window."""
@@ -177,6 +171,18 @@ class VsTestResult(TextTestResult):
         self._setResult(test, 'passed')
 
     def _setResult(self, test, outcome, trace = None):
+        # If a user runs the unit tests without debugging and then attaches to them using the legacy debugger (TCP or PID)
+        # Then the user will be able to debug this script. 
+        # After attaching the debugger, this script must add itself to the DONT_DEBUG list so it's not debugged. 
+        # Since this script doesn't know when the legacy debugger has been imported and attached, it's doing a check after every test
+        # This code will be removed when the legacy debugger is removed. 
+        # For more information, see https://github.com/microsoft/PTVS/pull/5447
+        if ("ptvsd" in sys.modules
+            and sys.modules["ptvsd"].__version__.startswith('3.') 
+            and os.path.normcase(__file__) not in sys.modules["ptvsd"].debugger.DONT_DEBUG):
+            sys.modules["ptvsd"].debugger.DEBUG_ENTRYPOINTS.add(sys.modules["ptvsd"].debugger.get_code(main))
+            sys.modules["ptvsd"].debugger.DONT_DEBUG.append(os.path.normcase(__file__))
+
         tb = None
         message = None
         duration = time.time() - self._start_time if self._start_time else 0
@@ -228,8 +234,9 @@ def main():
     global _channel
 
     parser = OptionParser(prog = 'visualstudio_py_testlauncher', usage = 'Usage: %prog [<option>] <test names>... ')
-    parser.add_option('-s', '--secret', metavar='<secret>', help='restrict server to only allow clients that specify <secret> when connecting')
+    parser.add_option('-s', '--secret', metavar='<secret>', help='restrict server to only allow clients that specify <secret> when connecting (legacy debugger only)')
     parser.add_option('-p', '--port', type='int', metavar='<port>', help='listen for debugger connections on <port>')
+    parser.add_option('-d', '--debugger-search-path', type='str', metavar='<debugger_path>', help='Path to the debugger directory')
     parser.add_option('-x', '--mixed-mode', action='store_true', help='wait for mixed-mode debugger to attach')
     parser.add_option('-t', '--test', type='str', dest='tests', action='append', help='specifies a test to run')
     parser.add_option('-c', '--coverage', type='str', help='enable code coverage and specify filename')
@@ -239,7 +246,9 @@ def main():
     (opts, _) = parser.parse_args()
     
     sys.path[0] = os.getcwd()
-    
+    if opts.debugger_search_path:
+        sys.path.insert(0, opts.debugger_search_path)
+
     if opts.result_port:
         _channel = _IpcChannel(socket.create_connection(('127.0.0.1', opts.result_port)))
         sys.stdout = _TestOutput(sys.stdout, is_stdout = True)
@@ -253,6 +262,11 @@ def main():
         DEBUG_ENTRYPOINTS.add(get_code(main))
 
         enable_attach(opts.secret, ('127.0.0.1', getattr(opts, 'port', DEFAULT_PORT)), redirect_output = True)
+        wait_for_attach()
+    elif opts.port:   
+        from ptvsd import enable_attach, wait_for_attach
+        
+        enable_attach(('127.0.0.1', getattr(opts, 'port', 5678)))
         wait_for_attach()
     elif opts.mixed_mode:
         # For mixed-mode attach, there's no ptvsd and hence no wait_for_attach(), 
@@ -273,9 +287,12 @@ def main():
                 break
             sleep(0.1)
 
+    if opts.debugger_search_path:
+        del sys.path[0]
+
     all_tests = list(opts.tests or [])
     if opts.test_list:
-        with open(opts.test_list, 'r', encoding='utf-8') as test_list:
+        with io.open(opts.test_list, 'r', encoding='utf-8') as test_list:
             all_tests.extend(t.strip() for t in test_list)
 
     if opts.dry_run:
@@ -340,7 +357,6 @@ def main():
                         message = message,
                         test = test
                     )
-
         if _IS_OLD_UNITTEST:
             def _makeResult(self):
                 return VsTestResult(self.stream, self.descriptions, self.verbosity)

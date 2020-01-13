@@ -1,11 +1,16 @@
-Miniconda3-latest-Windows-x86_64.exe /NoRegistry=1 /S /D=c:\installed
+Install 64-bit miniconda to default location:
+C:\ProgramData\Miniconda3
 
-Once install has finished (miniconda executable keeps running even after it's done?), delete the subfolders under pkgs. They will be recreated on demand and this greatly reduces number of files / amount of space used.
+Copy the contents of that folder to a working folder ie. c:\working.
 
-Create a condarc file in c:\installed:
-
-# directories in which environments are located
+Create a condarc file in c:\working:
 envs_dirs:
   - ~/.conda/envs
+pkgs_dirs:
+  - ~/.conda/pkgs
 
-Delete the contents of Miniconda3-x64, and replace with the contents of c:\installed
+Create an empty .nonadmin file in c:\working
+
+Delete the c:\working\pkgs folder.
+
+Delete the contents of Miniconda3-x64, and replace with the contents of c:\working.

@@ -16,34 +16,31 @@
 
 using System;
 using System.Threading;
+using System.Windows;
 using System.Windows.Automation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudioTools;
 
 namespace TestUtilities.UI {
     public class PythonTestExplorer : AutomationWrapper {
         private readonly VisualStudioApp _app;
-        private TreeView _tests;
-        private SummaryPane _summary;
+        private readonly AutomationWrapper _searchBar;
+        private PythonTestExplorerGridView _tests;
 
         private static class TestCommands {
-            public const string ToggleShowTestHierarchy = "TestExplorer.ToggleShowTestHierarchy";
             public const string GroupBy = "TestExplorer.GroupBy";
-            public const string NextGroupBy = "TestExplorer.NextGroupBy";
             public const string RunAllTests = "TestExplorer.RunAllTests";
+            public const string CopyDetails = "TestExplorer.CopyDetails";
+            public const string DebugAllTests = "TestExplorer.DebugAllTests";
         }
 
-        public static class TestState {
-            public const string NotRun = "NotRun";
-            public const string Passed = "Passed";
-            public const string Failed = "Failed";
-        }
-
-        public PythonTestExplorer(VisualStudioApp app, AutomationElement element)
+        public PythonTestExplorer(VisualStudioApp app, AutomationElement element, AutomationWrapper searchBarTextBox)
             : base(element) {
             _app = app;
+            _searchBar = searchBarTextBox ?? throw new ArgumentNullException(nameof(searchBarTextBox));
         }
 
-        public TreeView Tests {
+        public PythonTestExplorerGridView Tests {
             get {
                 if (_tests == null) {
                     var el = this.Element.FindFirst(
@@ -51,61 +48,96 @@ namespace TestUtilities.UI {
                         new AndCondition(
                             new PropertyCondition(
                                 AutomationElement.ClassNameProperty,
-                                "TreeView"
+                                "ListView"
                             ),
                             new PropertyCondition(
                                 AutomationElement.NameProperty,
-                                "Tests View"
+                                "Tracking List View"
                             )
                         )
                     );
-                    if (el != null)
-                        _tests = new TypeNavigatorPane(el);
+                    if (el != null) {
+                        _tests = new PythonTestExplorerGridView(el);
+                    }
                 }
                 return _tests;
             }
         }
 
-        public SummaryPane Summary {
-            get {
-                if (_summary == null) {
-                    var el = this.Element.FindFirst(
-                        TreeScope.Descendants,
-                        new AndCondition(
-                            new PropertyCondition(
-                                AutomationElement.ClassNameProperty,
-                                "ScrollViewer"
-                            ),
-                            new PropertyCondition(
-                                AutomationElement.NameProperty,
-                                "Selection Control Panel"
-                            )
-                        )
-                    );
-                    if (el != null)
-                        _summary = new SummaryPane(el);
+        /// <summary>
+        /// Copies the selected test details to the clipboard.
+        /// </summary>
+        private void CopyDetails() {
+            _app.WaitForCommandAvailable(TestCommands.CopyDetails, TimeSpan.FromSeconds(2));
+            _app.ExecuteCommand(TestCommands.CopyDetails);
+        }
+
+        public string GetDetailsWithRetry() {
+            string details = string.Empty;
+            for (int i = 0; i < 5; i++) {
+                // Clear the clipboard, so if copy fails, we don't end up using
+                // previous clipboard contents.
+                _app.ServiceProvider.GetUIThread().Invoke(() => Clipboard.SetText(string.Empty));
+
+                // Copy to clipboard
+                CopyDetails();
+
+                // Retrieve from clipboard
+                details = _app.ServiceProvider.GetUIThread().Invoke(() => Clipboard.GetText());
+                if (details.Contains("Test Name:")) {
+                    return details;
                 }
-                return _summary;
+
+                Thread.Sleep(500);
             }
+
+            return details;
         }
 
         /// <summary>
         /// Set the grouping to namespace.
         /// </summary>
-        public void GroupByNamespace() {
-            var groupCommand = _app.Dte.Commands.Item(TestCommands.GroupBy);
-            Assert.IsNotNull(groupCommand, "GroupBy command not found");
+        public void GroupByProjectNamespaceClass() {
+            // TODO: figure out how to programmatically change this
+            // it's now a popup window that appears on TestExplorer.GroupBy command
+            // well, at least when you click on it with the mouse
+            // It's not coming up when invoking the command programmatically
 
-            if (!groupCommand.IsAvailable) {
-                // Group command is not available when show hierarchy is on
-                _app.ExecuteCommand(TestCommands.ToggleShowTestHierarchy);
-                _app.WaitForCommandAvailable(groupCommand, TimeSpan.FromSeconds(5));
-            }
+            //var groupCommand = _app.Dte.Commands.Item(TestCommands.GroupBy);
+            //Assert.IsNotNull(groupCommand, "GroupBy command not found");
 
-            _app.ExecuteCommand(TestCommands.GroupBy); // by class
-            _app.ExecuteCommand(TestCommands.NextGroupBy); // by duration
-            _app.ExecuteCommand(TestCommands.NextGroupBy); // by namespace
 
+            //if (!groupCommand.IsAvailable) {
+            //    // Group command is not available when show hierarchy is on
+            //    //_app.ExecuteCommand(TestCommands.ToggleShowTestHierarchy);
+            //    _app.WaitForCommandAvailable(groupCommand, TimeSpan.FromSeconds(5));
+            //}
+
+            //_app.ExecuteCommand(TestCommands.GroupBy); // by class
+
+            //Thread.Sleep(100);
+
+            //var element = _app.Element.FindFirst(TreeScope.Descendants, new AndCondition(
+            //    new PropertyCondition(
+            //        AutomationElement.NameProperty,
+            //        "Project, Namespace, Class"
+            //    ),
+            //    new PropertyCondition(
+            //        AutomationElement.ClassNameProperty,
+            //        "TextBlock"
+            //    )
+            //));
+            //Assert.IsNotNull(element);
+
+            //var menuItem = element.CachedParent;
+            //Assert.IsNotNull(menuItem);
+
+            //menuItem.GetInvokePattern().Invoke();
+
+            WaitForTestsGrid();
+        }
+
+        private void WaitForTestsGrid() {
             // Wait for the test list to be created
             int retry = 5;
             while (Tests == null) {
@@ -118,88 +150,42 @@ namespace TestUtilities.UI {
             Assert.IsNotNull(Tests, "Tests list is null");
         }
 
-        /// <summary>
-        /// Wait for the node in the tree for the specified Python test.
-        /// </summary>
-        /// <remarks>
-        /// Relies on test explorer to be grouped by namespace.
-        /// </remarks>
-        public AutomationElement WaitForPythonTest(string moduleFileName, string testClass, string testMethod, string state) {
-            var successTest = Tests.WaitForItem(moduleFileName, $"{moduleFileName}::{testClass}::{testMethod}:{state}");
-            Assert.IsNotNull(successTest, $"Failed to find test: moduleFileName={moduleFileName}, testClass={testClass}, testMethod={testMethod}, state={state}");
-            return successTest;
+        public void ClearSearchBar() {
+            _searchBar.SetValue("");
+            Thread.Sleep(1000);
+        }
+
+        public AutomationElement WaitForItem(params string[] path) {
+            // WaitForItem doesn't work well with offscreen items
+            // so we use the search bar to filter by function name to 
+            // limit the items on screen and then expand all tree items. 
+            // Currently child items dont always load on expand, so we need to call
+            // it multiple times with delay as a work around.
+            _searchBar.SetValue(path[path.Length - 1]);
+
+            for (int i = 0; i < path.Length + 2; i++) {
+                Tests.ExpandAll();
+            }
+
+            return Tests.WaitForItem(path);
         }
 
         /// <summary>
         /// Run all tests and wait for the command to be available again.
         /// </summary>
         public void RunAll(TimeSpan timeout) {
+            ClearSearchBar();
             _app.Dte.ExecuteCommand(TestCommands.RunAllTests);
             Thread.Sleep(100);
             _app.WaitForCommandAvailable(TestCommands.RunAllTests, timeout);
         }
 
-        public class SummaryPane : AutomationWrapper {
-            private StackTraceList _stackTraceList;
-
-            public SummaryPane(AutomationElement element)
-                : base(element) {
-            }
-
-            public void WaitForDetails(string name) {
-                var header = FindFirstByNameAndAutomationId(
-                    name,
-                    "detailPanelHeader"
-                );
-                Assert.IsNotNull(header, $"Failed to find '{name}' details");
-            }
-
-            public StackTraceList StrackTraceList {
-                get {
-                    if (_stackTraceList == null) {
-                        var el = FindByName("Stack Trace Panel");
-                        if (el != null) {
-                            _stackTraceList = new StackTraceList(el);
-                        }
-                    }
-
-                    return _stackTraceList;
-                }
-            }
-        }
-
-        public class StackTraceList : ListView {
-            public StackTraceList(AutomationElement element) : base(element) { }
-
-            public StackFrameItem GetFrame(int index) {
-                var frame = Items[index];
-                if (frame != null) {
-                    return new StackFrameItem(frame.Element, this);
-                }
-
-                return null;
-            }
-        }
-
-        public class StackFrameItem : ListItem {
-            private AutomationWrapper _link;
-
-            public StackFrameItem(AutomationElement element, StackTraceList parent) : base(element, parent) { }
-
-            public AutomationWrapper Hyperlink {
-                get {
-                    if (_link == null) {
-                        var el = FindByAutomationId("stackFrameHyperlink");
-                        if (el != null) {
-                            _link = new AutomationWrapper(el);
-                        }
-                    }
-
-                    return _link;
-                }
-            }
-
-            public string Name => Element.Current.Name;
+        /// <summary>
+        /// Debug all tests and wait for the command to be available again.
+        /// </summary>
+        public void DebugAll() {
+            _app.Dte.ExecuteCommand(TestCommands.DebugAllTests);
+            Thread.Sleep(100);
         }
     }
 }

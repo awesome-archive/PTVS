@@ -21,7 +21,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -60,8 +59,7 @@ namespace Microsoft.PythonTools.Project {
         CommonProjectNode,
         IPythonProject,
         IAzureRoleProject,
-        IPythonProjectProvider
-    {
+        IPythonProjectProvider {
         // For files that are analyzed because they were directly or indirectly referenced in the search path, store the information
         // about the directory from the search path that referenced them in IProjectEntry.Properties[_searchPathEntryKey], so that
         // they can be located and removed when that directory is removed from the path.
@@ -98,6 +96,8 @@ namespace Microsoft.PythonTools.Project {
         private readonly CondaEnvCreateInfoBar _condaEnvCreateInfoBar;
         private readonly VirtualEnvCreateInfoBar _virtualEnvCreateInfoBar;
         private readonly PackageInstallInfoBar _packageInstallInfoBar;
+        private readonly TestFrameworkInfoBar _testFrameworkInfoBar;
+        private readonly PythonNotSupportedInfoBar _pythonVersionNotSupportedInfoBar;
 
         private readonly SemaphoreSlim _recreatingAnalyzer = new SemaphoreSlim(1);
 
@@ -130,9 +130,11 @@ namespace Microsoft.PythonTools.Project {
             InterpreterRegistry.InterpretersChanged += OnInterpreterRegistryChanged;
             _pythonProject = new VsPythonProject(this);
 
-            _condaEnvCreateInfoBar = new CondaEnvCreateInfoBar(this);
-            _virtualEnvCreateInfoBar = new VirtualEnvCreateInfoBar(this);
-            _packageInstallInfoBar = new PackageInstallInfoBar(this);
+            _condaEnvCreateInfoBar = new CondaEnvCreateProjectInfoBar(Site, this);
+            _virtualEnvCreateInfoBar = new VirtualEnvCreateProjectInfoBar(Site, this);
+            _packageInstallInfoBar = new PackageInstallProjectInfoBar(Site, this);
+            _testFrameworkInfoBar = new TestFrameworkProjectInfoBar(Site, this);
+            _pythonVersionNotSupportedInfoBar = new PythonNotSupportedInfoBar(Site, InfoBarContexts.Project, () => ActiveInterpreter);
         }
 
         private static KeyValuePair<string, string>[] outputGroupNames = {
@@ -241,7 +243,6 @@ namespace Microsoft.PythonTools.Project {
                 _activePackageManagers = null;
 
                 foreach (var pm in oldPms.MaybeEnumerate()) {
-                    pm.DisableNotifications();
                     pm.InstalledFilesChanged -= PackageManager_InstalledFilesChanged;
                 }
 
@@ -343,7 +344,7 @@ namespace Microsoft.PythonTools.Project {
             }
 
             var projectHome = PathUtils.GetAbsoluteDirectoryPath(BuildProject.DirectoryPath, BuildProject.GetPropertyValue("ProjectHome"));
-            var rootPath = PathUtils.EnsureEndSeparator(config.PrefixPath);
+            var rootPath = PathUtils.EnsureEndSeparator(config.GetPrefixPath());
 
             var id = MSBuildProjectInterpreterFactoryProvider.GetProjectRelativeId(BuildProject.FullPath, config.Id);
             if (string.IsNullOrEmpty(id)) {
@@ -357,7 +358,7 @@ namespace Microsoft.PythonTools.Project {
                     { MSBuildConstants.VersionKey, config.Version.ToString() },
                     { MSBuildConstants.DescriptionKey, config.Description },
                     { MSBuildConstants.InterpreterPathKey, PathUtils.GetRelativeFilePath(rootPath, config.InterpreterPath) },
-                    { MSBuildConstants.WindowsPathKey, PathUtils.GetRelativeFilePath(rootPath, config.WindowsInterpreterPath) },
+                    { MSBuildConstants.WindowsPathKey, PathUtils.GetRelativeFilePath(rootPath, config.GetWindowsInterpreterPath()) },
                     { MSBuildConstants.PathEnvVarKey, config.PathEnvironmentVariable },
                     { MSBuildConstants.ArchitectureKey, config.Architecture.ToString("X") }
                 });
@@ -507,11 +508,9 @@ namespace Microsoft.PythonTools.Project {
             if (!IsProjectOpened)
                 return;
 
-            if (this.IsAppxPackageableProject()) {
-                EnvDTE.Project automationObject = (EnvDTE.Project)GetAutomationObject();
+            var automationObject = (EnvDTE.Project)GetAutomationObject();
 
-                this.BuildProject.SetGlobalProperty(ProjectFileConstants.Platform, automationObject.ConfigurationManager.ActiveConfiguration.PlatformName);
-            }
+            this.BuildProject.SetGlobalProperty(ProjectFileConstants.Platform, automationObject.ConfigurationManager.ActiveConfiguration.PlatformName);
         }
 
         protected override bool SupportsIconMonikers {
@@ -572,7 +571,8 @@ namespace Microsoft.PythonTools.Project {
             return new[] {
                 GetGeneralPropertyPageType().GUID,
                 typeof(PythonDebugPropertyPage).GUID,
-                typeof(PublishPropertyPage).GUID
+                typeof(PublishPropertyPage).GUID,
+                typeof(PythonTestPropertyPage).GUID
             };
         }
 
@@ -742,7 +742,9 @@ namespace Microsoft.PythonTools.Project {
             await Task.WhenAll(
                 _condaEnvCreateInfoBar.CheckAsync(),
                 _virtualEnvCreateInfoBar.CheckAsync(),
-                _packageInstallInfoBar.CheckAsync()
+                _packageInstallInfoBar.CheckAsync(),
+                _testFrameworkInfoBar.CheckAsync(),
+                _pythonVersionNotSupportedInfoBar.CheckAsync()
             );
         }
 
@@ -854,9 +856,9 @@ namespace Microsoft.PythonTools.Project {
                             isInterpreterReference: !isProjectSpecific,
                             canDelete:
                                 isProjectSpecific &&
-                                Directory.Exists(fact.Configuration.PrefixPath),
-                            isGlobalDefault:false,
-                            canRemove:canRemove
+                                Directory.Exists(fact.Configuration.GetPrefixPath()),
+                            isGlobalDefault: false,
+                            canRemove: canRemove
                         ));
                     }
                 }
@@ -1083,7 +1085,6 @@ namespace Microsoft.PythonTools.Project {
 
                     if (_analyzer.RemoveUser()) {
                         _analyzer.AbnormalAnalysisExit -= AnalysisProcessExited;
-                        _analyzer.AnalyzerNeedsRestart -= OnActiveInterpreterChanged;
                         _analyzer.Dispose();
                     }
                     _analyzer = null;
@@ -1092,11 +1093,12 @@ namespace Microsoft.PythonTools.Project {
                 _condaEnvCreateInfoBar.Dispose();
                 _virtualEnvCreateInfoBar.Dispose();
                 _packageInstallInfoBar.Dispose();
+                _testFrameworkInfoBar.Dispose();
+                _pythonVersionNotSupportedInfoBar.Dispose();
 
                 _reanalyzeProjectNotification.Dispose();
 
                 foreach (var pm in _activePackageManagers.MaybeEnumerate()) {
-                    pm.DisableNotifications();
                     pm.InstalledFilesChanged -= PackageManager_InstalledFilesChanged;
                 }
 
@@ -1182,7 +1184,6 @@ namespace Microsoft.PythonTools.Project {
                 inProcess: inProc
             );
             res.AbnormalAnalysisExit += AnalysisProcessExited;
-            res.AnalyzerNeedsRestart += OnActiveInterpreterChanged;
 
             HookErrorsAndWarnings(res);
             UpdateAnalyzerSearchPaths(res);
@@ -1204,6 +1205,16 @@ namespace Microsoft.PythonTools.Project {
                 PythonLogEvent.AnalysisExitedAbnormally,
                 msg.ToString()
             );
+
+            if (IsClosed) {
+                return;
+            }
+
+            var factory = ActiveInterpreter;
+
+            Site.GetUIThread().InvokeTask(async () => {
+                await ReanalyzeProject(factory).HandleAllExceptions(Site, GetType());
+            }).DoNotWait();
         }
 
         private void HookErrorsAndWarnings(VsProjectAnalyzer res) {
@@ -1265,7 +1276,7 @@ namespace Microsoft.PythonTools.Project {
                 throw new MissingInterpreterException(
                     Strings.MissingEnvironment.FormatUI(fact.Configuration.Description, fact.Configuration.Version)
                 );
-            } else if (IsActiveInterpreterGlobalDefault && 
+            } else if (IsActiveInterpreterGlobalDefault &&
                 !String.IsNullOrWhiteSpace(BuildProject.GetPropertyValue(MSBuildConstants.InterpreterIdProperty))) {
                 throw new MissingInterpreterException(
                     Strings.MissingEnvironmentUnknownVersion.FormatUI(
@@ -1362,6 +1373,7 @@ namespace Microsoft.PythonTools.Project {
             var factory = ActiveInterpreter;
 
             Site.GetUIThread().InvokeTask(async () => {
+                await _pythonVersionNotSupportedInfoBar.CheckAsync();
                 await ReanalyzeProject(factory).HandleAllExceptions(Site, GetType());
             }).DoNotWait();
         }
@@ -1478,7 +1490,12 @@ namespace Microsoft.PythonTools.Project {
                     }
                 }
 
-                var files = AllVisibleDescendants.OfType<PythonFileNode>().Select(f => f.Url).ToArray();
+                var files = AllVisibleDescendants
+                    .OfType<PythonFileNode>()
+                    .Select(f => f.Url)
+                    .Where(File.Exists)
+                    .ToArray();
+
                 var fileSet = new Lazy<HashSet<string>>(() => new HashSet<string>(files, StringComparer.OrdinalIgnoreCase));
 
                 log?.WriteLine($"Project includes files:{Environment.NewLine}    {string.Join(Environment.NewLine + "    ", files)}");
@@ -1615,7 +1632,7 @@ namespace Microsoft.PythonTools.Project {
             );
 
 
-            var paths = config.Interpreter.PrefixPath;
+            var paths = config.Interpreter.GetPrefixPath();
             if (!Directory.Exists(paths)) {
                 paths = PathUtils.GetParent(config.GetInterpreterPath());
             }
@@ -1995,7 +2012,7 @@ namespace Microsoft.PythonTools.Project {
             GetSelectedInterpreterOrDefault(selectedNodes, args, out selectedInterpreter, out selectedInterpreterFactory,
                 useProjectByDefault: false);
             try {
-                ExecuteInReplCommand.EnsureReplWindow(Site, selectedInterpreterFactory?.Configuration, this).Show(true);
+                ExecuteInReplCommand.EnsureReplWindow(Site, selectedInterpreterFactory?.Configuration, this, null).Show(true);
             } catch (InvalidOperationException ex) {
                 MessageBox.Show(Strings.ErrorOpeningInteractiveWindow.FormatUI(ex), Strings.ProductTitle);
             } catch (MissingInterpreterException ex) {
@@ -2042,14 +2059,14 @@ namespace Microsoft.PythonTools.Project {
         public override bool Publish(PublishProjectOptions publishOptions, bool async) {
             var factory = GetInterpreterFactory();
             if (factory.Configuration.IsAvailable() &&
-                Directory.Exists(factory.Configuration.PrefixPath) &&
-                PathUtils.IsSubpathOf(ProjectHome, factory.Configuration.PrefixPath)
+                Directory.Exists(factory.Configuration.GetPrefixPath()) &&
+                PathUtils.IsSubpathOf(ProjectHome, factory.Configuration.GetPrefixPath())
             ) {
                 try {
                     publishOptions = TaskDialog.CallWithRetry(
                         _ => new PublishProjectOptions(
                             publishOptions.AdditionalFiles.Concat(
-                                PathUtils.EnumerateFiles(factory.Configuration.PrefixPath)
+                                PathUtils.EnumerateFiles(factory.Configuration.GetPrefixPath())
                                     // Exclude the completion DB
                                     .Where(f => !f.Contains("\\.ptvs\\"))
                                     .Select(f => new PublishFile(f, PathUtils.GetRelativeFilePath(ProjectHome, f)))
@@ -2473,7 +2490,7 @@ namespace Microsoft.PythonTools.Project {
         internal IPythonInterpreterFactory AddVirtualEnvironment(IInterpreterRegistryService service, string path, IPythonInterpreterFactory baseInterp) {
             var rootPath = PathUtils.GetAbsoluteDirectoryPath(ProjectHome, path);
             foreach (var existingConfig in InterpreterConfigurations) {
-                var rootPrefix = PathUtils.EnsureEndSeparator(existingConfig.PrefixPath);
+                var rootPrefix = PathUtils.EnsureEndSeparator(existingConfig.GetPrefixPath());
 
                 if (rootPrefix.Equals(rootPath, StringComparison.OrdinalIgnoreCase)) {
                     return InterpreterRegistry.FindInterpreter(existingConfig.Id);
@@ -2512,7 +2529,7 @@ namespace Microsoft.PythonTools.Project {
         ) {
             var rootPath = PathUtils.GetAbsoluteDirectoryPath(ProjectHome, path);
             foreach (var existingConfig in InterpreterConfigurations) {
-                var rootPrefix = PathUtils.EnsureEndSeparator(existingConfig.PrefixPath);
+                var rootPrefix = PathUtils.EnsureEndSeparator(existingConfig.GetPrefixPath());
 
                 if (rootPrefix.Equals(rootPath, StringComparison.OrdinalIgnoreCase)) {
                     return InterpreterRegistry.FindInterpreter(existingConfig.Id);
@@ -2521,7 +2538,7 @@ namespace Microsoft.PythonTools.Project {
 
             string id = GetNewEnvironmentName(path);
 
-            var config = new InterpreterConfiguration(
+            var config = new VisualStudioInterpreterConfiguration(
                 id,
                 description,
                 path,
@@ -2578,7 +2595,7 @@ namespace Microsoft.PythonTools.Project {
             }
             RemoveInterpreterFactory(factory);
 
-            var path = factory.Configuration.PrefixPath;
+            var path = factory.Configuration.GetPrefixPath();
             if (removeFromStorage && Directory.Exists(path)) {
                 var t = Task.Run(() => {
                     for (int retries = 5; Directory.Exists(path) && retries > 0; --retries) {
@@ -2608,6 +2625,13 @@ namespace Microsoft.PythonTools.Project {
         internal string GetRequirementsTxtPath() {
             var reqsPath = PathUtils.GetAbsoluteFilePath(ProjectHome, "requirements.txt");
             return File.Exists(reqsPath) ? reqsPath : null;
+        }
+
+        internal string GetPyTestConfigFilePath() {
+            string fileName = PythonConstants.PyTestFrameworkConfigFiles
+                .FirstOrDefault(x => File.Exists(PathUtils.GetAbsoluteFilePath(ProjectHome, x)));
+
+            return String.IsNullOrEmpty(fileName) ? "" : Path.Combine(ProjectHome, fileName);
         }
 
         internal string GetEnvironmentYmlPath() {
@@ -2641,7 +2665,7 @@ namespace Microsoft.PythonTools.Project {
                 return GuidList.guidPythonToolsCmdSet;
             }
         }
-        
+
         public PythonProject Project {
             get {
                 return _pythonProject;
@@ -2867,12 +2891,30 @@ namespace Microsoft.PythonTools.Project {
             private readonly PythonProjectNode _node;
             public VsPythonProject(PythonProjectNode node) {
                 _node = node;
+                _node.OnProjectPropertyChanged += OnProjectPropertyChanged;
+            }
+
+            private void OnProjectPropertyChanged(object sender, ProjectPropertyChangedArgs e) {
+                ProjectPropertyChanged?.Invoke(this, new PythonProjectPropertyChangedArgs(e.PropertyName, e.OldValue, e.NewValue));
             }
 
             public override string ProjectHome {
                 get {
                     return _node.ProjectHome;
                 }
+            }
+
+            public override string ProjectName {
+                get {
+                    return _node.Caption;
+                }
+            }
+
+            public override event EventHandler<PythonProjectPropertyChangedArgs> ProjectPropertyChanged;
+
+            public override event EventHandler ActiveInterpreterChanged {
+                add { _node.ActiveInterpreterChanged += value; }
+                remove { _node.ActiveInterpreterChanged -= value; }
             }
 
             public override event EventHandler ProjectAnalyzerChanged {

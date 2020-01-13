@@ -109,6 +109,14 @@ namespace Microsoft.PythonTools.Logging {
         /// </summary>
         PackageInstallInfoBar,
         /// <summary>
+        /// Configure test framework info bar
+        /// </summary>
+        ConfigureTestFrameworkInfoBar,
+        /// <summary>
+        /// Warn Python 38 support
+        /// </summary>
+        PythonNotSupportedInfoBar,
+        /// <summary>
         /// Create conda environment
         /// </summary>
         CreateCondaEnv,
@@ -124,5 +132,13 @@ namespace Microsoft.PythonTools.Logging {
         /// Install environment
         /// </summary>
         InstallEnv,
+        /// <summary>
+        /// Select an environment from the python toolbar
+        /// </summary>
+        SelectEnvFromToolbar,
+        /// <summary>
+        /// Add an environment from the python toolbar
+        /// </summary>
+        AddEnvFromToolbar,
     }
 }

@@ -137,7 +137,7 @@ namespace TestUtilities.UI.Python {
             } catch {
                 // If the package is not loaded yet then the command may not
                 // work. Force load the package by opening the Launch dialog.
-                using (var dialog = new PythonPerfTarget(OpenDialogWithDteExecuteCommand("Analyze.LaunchProfiling"))) {
+                using (var dialog = new PythonPerfTarget(OpenDialogWithDteExecuteCommand("Debug.LaunchProfiling"))) {
                 }
                 Dte.ExecuteCommand("Python.PerformanceExplorer");
             }
@@ -148,7 +148,7 @@ namespace TestUtilities.UI.Python {
         /// </summary>
         public PythonPerfTarget LaunchPythonProfiling() {
             _deletePerformanceSessions = true;
-            return new PythonPerfTarget(OpenDialogWithDteExecuteCommand("Analyze.LaunchProfiling"));
+            return new PythonPerfTarget(OpenDialogWithDteExecuteCommand("Debug.LaunchProfiling"));
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace TestUtilities.UI.Python {
             get {
                 if (_testExplorer == null) {
                     AutomationElement element = null;
-                    for (int i = 0; i < 10 && element == null; i++) {
+                    for (int i = 0; i < 40 && element == null; i++) {
                         element = Element.FindFirst(TreeScope.Descendants,
                             new AndCondition(
                                 new PropertyCondition(
@@ -228,15 +228,58 @@ namespace TestUtilities.UI.Python {
                             System.Threading.Thread.Sleep(500);
                         }
                     }
-                    _testExplorer = new PythonTestExplorer(this, element);
+                    Assert.IsNotNull(element, "Missing Text Explorer window");
+                    var testExplorer = new AutomationWrapper(element);
+              
+                    var searchBox = testExplorer.FindByName("Search Test Explorer");
+                    Assert.IsNotNull(searchBox, "Missing Search Bar Textbox");
+
+                    _testExplorer = new PythonTestExplorer(this, element, new AutomationWrapper(searchBox));
                 }
                 return _testExplorer;
             }
         }
 
+        public AutomationElementCollection GetInfoBars() {
+            return Element.FindAll(
+                TreeScope.Descendants,
+                new PropertyCondition(AutomationElement.AutomationIdProperty, "infobarcontrol")
+            );
+        }
+
+        public AutomationElement FindFirstInfoBar(Condition condition, TimeSpan timeout) {
+            for (int i = 0; i < timeout.TotalMilliseconds; i += 500) {
+                var infoBars = GetInfoBars();
+                foreach (AutomationElement infoBar in infoBars) {
+                    var createLink = infoBar.FindFirst(TreeScope.Descendants, condition);
+                    if (createLink != null) {
+                        return createLink;
+                    }
+                }
+                Thread.Sleep(500);
+            }
+
+            return null;
+        }
+
+        public PythonCreateVirtualEnvInfoBar FindCreateVirtualEnvInfoBar(TimeSpan timeout) {
+            var element = FindFirstInfoBar(PythonCreateVirtualEnvInfoBar.FindCondition, timeout);
+            return element != null ? new PythonCreateVirtualEnvInfoBar(element) : null;
+        }
+
+        public PythonCreateCondaEnvInfoBar FindCreateCondaEnvInfoBar(TimeSpan timeout) {
+            var element = FindFirstInfoBar(PythonCreateCondaEnvInfoBar.FindCondition, timeout);
+            return element != null ? new PythonCreateCondaEnvInfoBar(element) : null;
+        }
+
+        public PythonInstallPackagesInfoBar FindInstallPackagesInfoBar(TimeSpan timeout) {
+            var element = FindFirstInfoBar(PythonInstallPackagesInfoBar.FindCondition, timeout);
+            return element != null ? new PythonInstallPackagesInfoBar(element) : null;
+        }
+
         public ReplWindowProxy ExecuteInInteractive(Project project, ReplWindowProxySettings settings = null) {
             // Prepare makes sure that IPython mode is disabled, and that the REPL is reset and cleared
-            var window = ReplWindowProxy.Prepare(this, settings, project.Name);
+            var window = ReplWindowProxy.Prepare(this, settings, project.Name, workspaceName: null);
             OpenSolutionExplorer().SelectProject(project);
             ExecuteCommand("Python.ExecuteInInteractive");
             return window;
@@ -385,7 +428,7 @@ namespace TestUtilities.UI.Python {
             Assert.IsNotNull(config, "Could not find intepreter configuration");
 
             string envLabel = string.Format("{0} ({1}, {2})", envName, config.Version, config.Architecture);
-            envPath = config.PrefixPath;
+            envPath = config.GetPrefixPath();
 
             Console.WriteLine("Expecting environment: {0}", envLabel);
 
@@ -410,7 +453,7 @@ namespace TestUtilities.UI.Python {
             Assert.IsNotNull(config, "Could not find intepreter configuration");
 
             envDescription = string.Format("{0} ({1}, {2})", envName, config.Version, config.Architecture);
-            envPath = config.PrefixPath;
+            envPath = config.GetPrefixPath();
 
             Console.WriteLine("Expecting environment: {0}", envDescription);
         }
@@ -538,7 +581,7 @@ namespace TestUtilities.UI.Python {
             var environmentsNode = OpenSolutionExplorer().FindChildOfProject(project, Strings.Environments);
             environmentsNode.Select();
 
-            var factory = InterpreterService.Interpreters.FirstOrDefault(interp => PathUtils.IsSameDirectory(interp.Configuration.PrefixPath, envPath));
+            var factory = InterpreterService.Interpreters.FirstOrDefault(interp => PathUtils.IsSameDirectory(interp.Configuration.GetPrefixPath(), envPath));
             envName = string.Format("Python {1} ({2})", PathUtils.GetFileOrDirectoryName(envPath), factory.Configuration.Version, factory.Configuration.Architecture);
 
             ApplyAddExistingEnvironmentDialog(envPath, out envName);
@@ -551,7 +594,7 @@ namespace TestUtilities.UI.Python {
         }
 
         private void ApplyAddExistingEnvironmentDialog(string envPath, out string envName) {
-            var factory = InterpreterService.Interpreters.FirstOrDefault(interp => PathUtils.IsSameDirectory(interp.Configuration.PrefixPath, envPath));
+            var factory = InterpreterService.Interpreters.FirstOrDefault(interp => PathUtils.IsSameDirectory(interp.Configuration.GetPrefixPath(), envPath));
             envName = string.Format("Python {1} ({2})", PathUtils.GetFileOrDirectoryName(envPath), factory.Configuration.Version, factory.Configuration.Architecture);
 
             var dlg = AddExistingEnvironmentDialogWrapper.FromDte(this);

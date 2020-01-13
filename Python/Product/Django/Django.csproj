@@ -131,6 +131,7 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow" />
     <Reference Include="Microsoft.VisualStudio.VsInteractiveWindow" />
+    <Reference Include="Microsoft.Python.Analysis.Engine" />
   </ItemGroup>
   <ItemDefinitionGroup>
     <ZipProject>
@@ -230,10 +231,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Analysis\Analysis.csproj">
-      <Project>{A85D479D-67A9-4BDB-904A-7D86DAF68A6F}</Project>
-      <Name>Microsoft.PythonTools.Analysis</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Debugger\Debugger.csproj">
       <Project>{DECC7971-FA58-4DB0-9561-BFFADD393BBD}</Project>
       <Name>Microsoft.PythonTools.Debugger</Name>
@@ -251,6 +248,10 @@
       <Project>{a52ac77f-6df9-4387-bb08-8ded3fd95a0f}</Project>
       <Name>Microsoft.PythonTools.VSCommon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\VSInterpreters\VSInterpreters.csproj">
+      <Project>{815DB0CD-C0DD-4997-B43C-ABEE4DBEFFE7}</Project>
+      <Name>VSInterpreters</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Project\NewAppDialog.xaml">
@@ -265,11 +266,6 @@
     <When Condition="$(IncludeDjangoHtmlExtensions) == 'true'">
       <ItemGroup>
         <Reference Include="Microsoft.VisualStudio.Web.HTML" />
-        <Reference Include="Microsoft.Web.Core" Condition=" '$(VSTarget)' == '15.0' " />
-        <Reference Include="Microsoft.Web.Editor" Condition=" '$(VSTarget)' == '15.0' " />
-        <Reference Include="Microsoft.Html.Core" Condition=" '$(VSTarget)' == '15.0' " />
-        <Reference Include="Microsoft.Html.Editor" Condition=" '$(VSTarget)' == '15.0' " />
-        <Reference Include="Microsoft.VisualStudio.Html.Package" Condition=" '$(VSTarget)' == '15.0' " />
         <Reference Include="Microsoft.WebTools.Languages.Shared.dll" Condition=" '$(VSTarget)' == '16.0' " />
         <Reference Include="Microsoft.WebTools.Languages.Shared.Editor.dll" Condition=" '$(VSTarget)' == '16.0' " />
         <Reference Include="Microsoft.WebTools.Languages.Html.dll" Condition=" '$(VSTarget)' == '16.0' " />
@@ -279,9 +275,6 @@
       <ItemGroup>
         <Compile Include="DjangoEditorFactory.cs" />
         <Compile Include="Formatting\TemplateEditorFormatterProvider.cs" />
-        <Compile Include="Formatting\TemplateFormatDocumentCommandHandler.cs" />
-        <Compile Include="Formatting\TemplateFormatSelectionCommandHandler.cs" />
-        <Compile Include="Formatting\TemplateHtmlCommandFactory.cs" />
         <Compile Include="Intellisense\AnalyzerExtensions.cs" />
         <Compile Include="Intellisense\DjangoCompletionSource.cs" />
         <Compile Include="Intellisense\DjangoCompletionSourceBase.cs" />
@@ -289,13 +282,10 @@
         <Compile Include="Intellisense\DjangoPredefinedClassificationTypeNames.cs" />
         <Compile Include="Intellisense\ProjectBlockCompletionContext.cs" />
         <Compile Include="Intellisense\ProjectBlockCompletionContextBase.cs" />
-        <Compile Include="Intellisense\TemplateCommandFactory.cs" />
-        <Compile Include="Intellisense\TemplateCompletionCommandHandler.cs" />
         <Compile Include="Intellisense\TemplateCompletionController.cs" />
         <Compile Include="Intellisense\TemplateCompletionControllerProvider.cs" />
         <Compile Include="Intellisense\TemplateMainController.cs" />
         <Compile Include="Intellisense\TemplateTextViewConnectionListener.cs" />
-        <Compile Include="Intellisense\TemplateTypingCommandHandler.cs" />
         <Compile Include="Intellisense\TextBufferExtensions.cs" />
         <Compile Include="TemplateContentType.cs" />
         <Compile Include="TemplateParsing\DjangoBlock.cs" />

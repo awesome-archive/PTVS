@@ -42,6 +42,7 @@ namespace Microsoft.PythonTools.Debugger {
         ) {
             var options = pyService.DebuggerOptions;
 
+            yield return AD7Engine.StopOnEntry + "=True";
             if (alwaysPauseAtEnd || allowPauseAtEnd && options.WaitOnAbnormalExit) {
                 yield return AD7Engine.WaitOnAbnormalExitSetting + "=True";
             }
@@ -113,9 +114,9 @@ namespace Microsoft.PythonTools.Debugger {
             );
         }
 
-        private static string GetLaunchJsonForVsCodeDebugAdapter(IServiceProvider provider, LaunchConfiguration config) {
+        private static string GetLaunchJsonForVsCodeDebugAdapter(IServiceProvider provider, LaunchConfiguration config, Dictionary<string, string> fullEnvironment) {
             JArray envArray = new JArray();
-            foreach (var kv in provider.GetPythonToolsService().GetFullEnvironment(config)) {
+            foreach (var kv in fullEnvironment) {
                 JObject pair = new JObject {
                     ["name"] = kv.Key,
                     ["value"] = kv.Value
@@ -129,15 +130,24 @@ namespace Microsoft.PythonTools.Debugger {
                 ["remoteMachine"] = "",
                 ["args"] = GetArgs(config),
                 ["options"] = GetOptions(provider, config),
-                ["env"] = envArray
+                ["env"] = envArray,
+                ["interpreterArgs"] = config.InterpreterArguments,
             };
-            
+
+            if (config.Environment == null) {
+                jsonObj["scriptName"] = config.ScriptName?.Trim();
+                jsonObj["scriptArgs"] = config.ScriptArguments?.Trim();
+            } else {
+                jsonObj["scriptName"] = DoSubstitutions(config.Environment, config.ScriptName?.Trim());
+                jsonObj["scriptArgs"] = DoSubstitutions(config.Environment, config.ScriptArguments?.Trim());
+            }
+
             // Note: these are optional, but special. These override the pkgdef version of the adapter settings
             // for other settings see the documentation for VSCodeDebugAdapterHost Launch Configuration
             // jsonObj["$adapter"] = "{path - to - adapter executable}";
             // jsonObj["$adapterArgs"] = "";
             // jsonObj["$adapterRuntime"] = "";
-            
+
             return jsonObj.ToString();
         }
 
@@ -152,7 +162,7 @@ namespace Microsoft.PythonTools.Debugger {
         }
 
         public static unsafe DebugTargetInfo CreateDebugTargetInfo(IServiceProvider provider, LaunchConfiguration config) {
-            if (config.Interpreter.Version < new Version(2, 6)) {
+            if (config.Interpreter.Version < new Version(2, 6) && config.Interpreter.Version > new Version(0, 0)) {
                 // We don't support Python 2.5 now that our debugger needs the json module
                 throw new NotSupportedException(Strings.DebuggerPythonVersionNotSupported);
             }
@@ -176,7 +186,8 @@ namespace Microsoft.PythonTools.Debugger {
                 // null-terminated block of null-terminated strings. 
                 // Each string is in the following form:name=value\0
                 var buf = new StringBuilder();
-                foreach (var kv in provider.GetPythonToolsService().GetFullEnvironment(config)) {
+                var fullEnvironment = provider.GetPythonToolsService().GetFullEnvironment(config);
+                foreach (var kv in fullEnvironment) {
                     buf.AppendFormat("{0}={1}\0", kv.Key, kv.Value);
                 }
                 if (buf.Length > 0) {
@@ -199,7 +210,7 @@ namespace Microsoft.PythonTools.Debugger {
                     dti.Info.grfLaunch = (uint)__VSDBGLAUNCHFLAGS.DBGLAUNCH_StopDebuggingOnEnd;
 
                     if (!pyService.DebuggerOptions.UseLegacyDebugger) {
-                        dti.Info.bstrOptions = GetLaunchJsonForVsCodeDebugAdapter(provider, config);
+                        dti.Info.bstrOptions = GetLaunchJsonForVsCodeDebugAdapter(provider, config, fullEnvironment);
                     }
                 }
                 

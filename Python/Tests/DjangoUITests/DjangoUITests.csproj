@@ -52,6 +52,7 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <HintPath>$(CommonProgramFiles)\Microsoft Shared\MSEnv\PublicAssemblies\envdte.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Python.Analysis.Engine" />
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost" />
     <Reference Include="Microsoft.VisualStudio.CoreUtility" />
     <Reference Include="Microsoft.VisualStudio.Shell.15.0" />
@@ -84,11 +85,6 @@
     <Reference Include="Microsoft.VisualStudio.Threading">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Microsoft.Web.Core" Condition=" '$(VSTarget)' == '15.0' " />
-    <Reference Include="Microsoft.Web.Editor" Condition=" '$(VSTarget)' == '15.0' " />
-    <Reference Include="Microsoft.Html.Core" Condition=" '$(VSTarget)' == '15.0' " />
-    <Reference Include="Microsoft.Html.Editor" Condition=" '$(VSTarget)' == '15.0' " />
-    <Reference Include="Microsoft.VisualStudio.Html.Package" Condition=" '$(VSTarget)' == '15.0' " />
     <Reference Include="Microsoft.WebTools.Languages.Shared.dll" Condition=" '$(VSTarget)' == '16.0' " />
     <Reference Include="Microsoft.WebTools.Languages.Shared.Editor.dll" Condition=" '$(VSTarget)' == '16.0' " />
     <Reference Include="Microsoft.WebTools.Languages.Html.dll" Condition=" '$(VSTarget)' == '16.0' " />
@@ -105,10 +101,6 @@
     <Compile Include="VSPackage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Product\Analysis\Analysis.csproj">
-      <Project>{a85d479d-67a9-4bdb-904a-7d86daf68a6f}</Project>
-      <Name>Analysis</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Product\Debugger\Debugger.csproj">
       <Project>{DECC7971-FA58-4DB0-9561-BFFADD393BBD}</Project>
       <Name>Debugger</Name>
@@ -137,7 +129,6 @@
     <ProjectReference Include="..\DebuggerUITests\DebuggerUITests.csproj">
       <Project>{82BB3890-C943-421E-8643-7244421E8ADE}</Project>
       <Name>DebuggerUITests</Name>
-      <IncludeInVsix>true</IncludeInVsix>
     </ProjectReference>
     <ProjectReference Include="..\Utilities.Python.Analysis\TestUtilities.Python.Analysis.csproj">
       <Project>{A731C4C3-3741-4080-A946-C47574C1F3BF}</Project>

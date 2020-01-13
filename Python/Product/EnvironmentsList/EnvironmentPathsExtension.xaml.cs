@@ -14,6 +14,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -70,7 +71,7 @@ namespace Microsoft.PythonTools.EnvironmentsList {
             var path = (string)e.Parameter;
             var psi = new ProcessStartInfo();
             psi.UseShellExecute = false;
-            psi.FileName = "explorer.exe";
+            psi.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
 
             if (File.Exists(path)) {
                 psi.Arguments = "/select,\"" + path + "\"";
@@ -93,6 +94,15 @@ namespace Microsoft.PythonTools.EnvironmentsList {
             } else {
                 Clipboard.SetDataObject((IDataObject)e.Parameter);
             }
+        }
+
+        private void OpenInBrowser_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = true;
+        }
+
+        private void OpenInBrowser_Executed(object sender, ExecutedRoutedEventArgs e) {
+            var url = (string)e.Parameter;
+            Process.Start(url)?.Dispose();
         }
 
         private void IsIPythonModeEnabled_Loaded(object sender, RoutedEventArgs e) {

@@ -52,7 +52,7 @@ namespace PythonToolsMockTests {
             VsProjectAnalyzer.SuppressTaskProvider = false;
         }
 
-        [TestMethod, Priority(0)]
+        [TestMethod, Priority(UnitTestPriority.P1)]
         public async Task ModuleDefinition() {
             var code = @"import os
 ";
@@ -62,7 +62,7 @@ namespace PythonToolsMockTests {
             }
         }
 
-        [TestMethod, Priority(0)]
+        [TestMethod, Priority(UnitTestPriority.P1_FAILING)]
         public async Task ModuleImportDefinition() {
             var code = @"import sys
 
@@ -77,7 +77,7 @@ sys.version
             }
         }
 
-        [TestMethod, Priority(0)]
+        [TestMethod, Priority(UnitTestPriority.P1)]
         public async Task ClassDefinition() {
             var code = @"class ClassBase(object):
     pass
@@ -106,7 +106,7 @@ obj
             }
         }
 
-        [TestMethod, Priority(0)]
+        [TestMethod, Priority(UnitTestPriority.P1)]
         public async Task ParameterDefinition() {
             var code = @"def my_func(param1, param2 = True):
     print(param1)
@@ -132,7 +132,7 @@ my_func(2, param2=False)
             }
         }
 
-        [TestMethod, Priority(0)]
+        [TestMethod, Priority(UnitTestPriority.P1)]
         public async Task NamedArgumentDefinition() {
             var code = @"class MyClass(object):
     def my_class_func1(self, param2 = True):
@@ -165,7 +165,7 @@ obj.my_class_func2(param3=False)
             }
         }
 
-        [TestMethod, Priority(0)]
+        [TestMethod, Priority(UnitTestPriority.P1)]
         public async Task PropertyDefinition() {
             var code = @"class MyClass(object):
     _my_attr_val = 0
@@ -185,9 +185,9 @@ print(obj._my_attr_val)
 ";
             using (var helper = new NavigableHelper(code, Version)) {
                 // my_attr
-                await helper.CheckDefinitionLocations(71, 7, Location(4, 5), Location(5, 9), Location(8, 5), Location(9, 9));
-                await helper.CheckDefinitionLocations(128, 7, Location(4, 5), Location(5, 9), Location(8, 5), Location(9, 9));
-                await helper.CheckDefinitionLocations(152, 7, Location(4, 5), Location(5, 9), Location(8, 5), Location(9, 9));
+                await helper.CheckDefinitionLocations(71, 7, Location(4, 5), Location(8, 5), Location(9, 9));
+                await helper.CheckDefinitionLocations(128, 7, Location(4, 5), Location(8, 5), Location(9, 9));
+                await helper.CheckDefinitionLocations(152, 7, Location(4, 5), Location(8, 5), Location(9, 9));
                 await helper.CheckDefinitionLocations(229, 7, Location(4, 5), Location(5, 9), Location(8, 5), Location(9, 9), Location(13, 5));
                 await helper.CheckDefinitionLocations(252, 7, Location(4, 5), Location(5, 9), Location(8, 5), Location(9, 9), Location(13, 5));
 
@@ -202,14 +202,14 @@ print(obj._my_attr_val)
                 await helper.CheckDefinitionLocations(272, 12, Location(2, 5), Location(10, 14));
 
                 // self
-                await helper.CheckDefinitionLocations(79, 4, Location(5, 17));
-                await helper.CheckDefinitionLocations(102, 4, Location(5, 17));
-                await helper.CheckDefinitionLocations(160, 4, Location(9, 17));
-                await helper.CheckDefinitionLocations(181, 4, Location(9, 17));
+                await helper.CheckDefinitionLocations(79, 4, Location(1, 1));
+                await helper.CheckDefinitionLocations(102, 4, Location(1, 1));
+                await helper.CheckDefinitionLocations(160, 4, Location(1, 1));
+                await helper.CheckDefinitionLocations(181, 4, Location(1, 1));
             }
         }
 
-        [TestMethod, Priority(0)]
+        [TestMethod, Priority(UnitTestPriority.P1)]
         public async Task VariableDefinition() {
             var code = @"my_var = 0
 my_var = 1
@@ -217,7 +217,7 @@ res = my_var * 10
 ";
             using (var helper = new NavigableHelper(code, Version)) {
                 // 2 definitions for my_var
-                await helper.CheckDefinitionLocations(30, 6, Location(1, 1), Location(2, 1));
+                await helper.CheckDefinitionLocations(30, 6, Location(2, 1));
             }
         }
 

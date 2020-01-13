@@ -25,6 +25,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtilities;
 using TestUtilities.Mocks;
 using TestUtilities.Python;
+using LS = Microsoft.VisualStudio.LiveShare.LanguageServices;
 
 namespace PythonToolsTests {
     [TestClass]
@@ -52,13 +53,13 @@ namespace PythonToolsTests {
             );
         }
 
-        [TestMethod, Priority(0)]
+        [TestMethod, Priority(UnitTestPriority.P1)]
         public async Task LiveShareCallback_Initialize() {
             var cb = PythonLanguageServiceProviderCallback.CreateTestInstance();
 
             using (var analyzer = await CreateAnalyzerAsync()) {
                 var res = await cb.RequestAsync(
-                    Methods.Initialize,
+                    new LS.LspRequest<InitializeParams, InitializeResult>(Methods.InitializeName),
                     null,
                     null,
                     CancellationToken.None
@@ -72,7 +73,7 @@ namespace PythonToolsTests {
             }
         }
 
-        [TestMethod, Priority(0)]
+        [TestMethod, Priority(UnitTestPriority.P0)]
         public async Task LiveShareCallback_Completion() {
             var cb = PythonLanguageServiceProviderCallback.CreateTestInstance();
 
@@ -84,7 +85,7 @@ namespace PythonToolsTests {
                 cb.SetAnalyzer(entry.DocumentUri, analyzer);
 
                 var res = await cb.RequestAsync(
-                    new LspRequest<CompletionParams, CompletionList>(Methods.TextDocumentCompletionName),
+                    new LS.LspRequest<CompletionParams, CompletionList>(Methods.TextDocumentCompletionName),
                     new CompletionParams {
                         TextDocument = new TextDocumentIdentifier { Uri = entry.DocumentUri },
                         Position = new Position { Line = 0, Character = 0 },
@@ -105,7 +106,7 @@ namespace PythonToolsTests {
             }
         }
 
-        [TestMethod, Priority(0)]
+        [TestMethod, Priority(UnitTestPriority.P1)]
         public async Task LiveShareCallback_Hover() {
             var cb = PythonLanguageServiceProviderCallback.CreateTestInstance();
 
@@ -117,7 +118,7 @@ namespace PythonToolsTests {
                 cb.SetAnalyzer(entry.DocumentUri, analyzer);
 
                 var res = await cb.RequestAsync(
-                    Methods.TextDocumentHover,
+                    new LS.LspRequest<TextDocumentPositionParams, Hover>(Methods.TextDocumentHoverName),
                     new TextDocumentPositionParams {
                         TextDocument = new TextDocumentIdentifier { Uri = entry.DocumentUri },
                         Position = new Position { Line = 6, Character = 10 }
@@ -138,7 +139,7 @@ namespace PythonToolsTests {
             }
         }
 
-        [TestMethod, Priority(0)]
+        [TestMethod, Priority(UnitTestPriority.P1)]
         public async Task LiveShareCallback_Definition() {
             var cb = PythonLanguageServiceProviderCallback.CreateTestInstance();
 
@@ -150,7 +151,7 @@ namespace PythonToolsTests {
                 cb.SetAnalyzer(entry.DocumentUri, analyzer);
 
                 var res = await cb.RequestAsync(
-                    new LspRequest<TextDocumentPositionParams, Location[]>(Methods.TextDocumentDefinitionName),
+                    new LS.LspRequest<TextDocumentPositionParams, Location[]>(Methods.TextDocumentDefinitionName),
                     new TextDocumentPositionParams {
                         TextDocument = new TextDocumentIdentifier { Uri = entry.DocumentUri },
                         Position = new Position { Line = 12, Character = 6 }
@@ -163,7 +164,7 @@ namespace PythonToolsTests {
                 Assert.AreEqual(2, res[0].Range.Start.Line);
 
                 res = await cb.RequestAsync(
-                    new LspRequest<TextDocumentPositionParams, Location[]>(Methods.TextDocumentDefinitionName),
+                    new LS.LspRequest<TextDocumentPositionParams, Location[]>(Methods.TextDocumentDefinitionName),
                     new TextDocumentPositionParams {
                         TextDocument = new TextDocumentIdentifier { Uri = entry.DocumentUri },
                         Position = new Position { Line = 13, Character = 6 }
@@ -177,7 +178,7 @@ namespace PythonToolsTests {
             }
         }
 
-        [TestMethod, Priority(0)]
+        [TestMethod, Priority(UnitTestPriority.P1)]
         public async Task LiveShareCallback_References() {
             var cb = PythonLanguageServiceProviderCallback.CreateTestInstance();
 
@@ -193,7 +194,7 @@ namespace PythonToolsTests {
                 // server side though, not here.
                 for (int retries = 5; retries > 0; --retries) {
                     res = await cb.RequestAsync(
-                        Methods.TextDocumentReferences,
+                        new LS.LspRequest<ReferenceParams, Location[]>(Methods.TextDocumentReferencesName),
                         new ReferenceParams {
                             TextDocument = new TextDocumentIdentifier { Uri = entry.DocumentUri },
                             Position = new Position { Line = 2, Character = 10 },
@@ -212,7 +213,7 @@ namespace PythonToolsTests {
                 AssertUtil.ContainsAtLeast(res.Select(r => r.Range.Start.Line), 2, 12);
 
                 res = await cb.RequestAsync(
-                    Methods.TextDocumentReferences,
+                    new LS.LspRequest<ReferenceParams, Location[]>(Methods.TextDocumentReferencesName),
                     new ReferenceParams {
                         TextDocument = new TextDocumentIdentifier { Uri = entry.DocumentUri },
                         Position = new Position { Line = 3, Character = 10 },

@@ -24,11 +24,10 @@ using System.Threading.Tasks;
 using Microsoft.PythonTools.Infrastructure;
 using Microsoft.PythonTools.Interpreter;
 using Microsoft.PythonTools.Project;
-using Microsoft.VisualStudio.Workspace;
 
 namespace Microsoft.PythonTools.Environments {
     static class VirtualEnv {
-        private static readonly KeyValuePair<string, string>[] UnbufferedEnv = new[] { 
+        private static readonly KeyValuePair<string, string>[] UnbufferedEnv = new[] {
             new KeyValuePair<string, string>("PYTHONUNBUFFERED", "1")
         };
 
@@ -66,7 +65,7 @@ namespace Microsoft.PythonTools.Environments {
             IInterpreterRegistryService registry,
             IInterpreterOptionsService options,
             PythonProjectNode project,
-            IWorkspace workspace,
+            IPythonWorkspaceContext workspace,
             string path,
             IPythonInterpreterFactory baseInterp,
             bool registerAsCustomEnv,
@@ -323,7 +322,7 @@ namespace Microsoft.PythonTools.Environments {
             GetVirtualEnvConfig(prefixPath, baseInterpreter, out string interpExe, out string winterpExe, out string pathVar);
             string description = PathUtils.GetFileOrDirectoryName(prefixPath);
 
-            return new InterpreterConfiguration(
+            return new VisualStudioInterpreterConfiguration(
                 id ?? baseInterpreter.Configuration.Id,
                 baseInterpreter == null ? description : string.Format("{0} ({1})", description, baseInterpreter.Configuration.Description),
                 prefixPath,
@@ -345,7 +344,7 @@ namespace Microsoft.PythonTools.Environments {
 
             if (Directory.Exists(basePath)) {
                 return service.Interpreters.FirstOrDefault(interp =>
-                    PathUtils.IsSamePath(PathUtils.TrimEndSeparator(interp.Configuration.PrefixPath), basePath)
+                    PathUtils.IsSamePath(PathUtils.TrimEndSeparator(interp.Configuration.GetPrefixPath()), basePath)
                 );
             }
             return null;
@@ -404,7 +403,7 @@ namespace Microsoft.PythonTools.Environments {
             out string pathVar
         ) {
             interpExe = Path.GetFileName(baseInterpreter.Configuration.InterpreterPath);
-            winterpExe = Path.GetFileName(baseInterpreter.Configuration.WindowsInterpreterPath);
+            winterpExe = Path.GetFileName(baseInterpreter.Configuration.GetWindowsInterpreterPath());
             var scripts = new[] { "Scripts", "bin" };
             interpExe = PathUtils.FindFile(prefixPath, interpExe, firstCheck: scripts);
             winterpExe = PathUtils.FindFile(prefixPath, winterpExe, firstCheck: scripts);
@@ -425,6 +424,20 @@ namespace Microsoft.PythonTools.Environments {
                 libPath = Path.GetDirectoryName(libPath);
             }
             return libPath;
+        }
+
+        internal static bool IsPythonVirtualEnv(string prefixPath) {
+            if (string.IsNullOrEmpty(prefixPath)) {
+                return false;
+            }
+
+            string libPath = FindLibPath(prefixPath);
+            if (libPath == null) {
+                return false;
+            }
+
+            //pyenv.cfg detects python 3 and orig-prefix.txt detects python 2
+            return (File.Exists(Path.Combine(prefixPath, "pyvenv.cfg")) || File.Exists(Path.Combine(libPath, "orig-prefix.txt")));
         }
     }
 }

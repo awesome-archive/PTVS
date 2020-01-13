@@ -63,6 +63,13 @@ namespace TestUtilities.UI {
             ErrorHandler.ThrowOnFailure(uiShell.GetDialogOwnerHwnd(out hwnd));
             if (hwnd != _mainWindowHandle) {
                 using (var dlg = new AutomationDialog(this, AutomationElement.FromHandle(hwnd))) {
+                    //startup window popup, press button "Continue without code"
+                    var cwc = dlg.FindByName("Continue without code");
+                    if (cwc != null) {
+                        Invoke(cwc);
+                        WaitForInputIdle();
+                        return;
+                    }
                     Console.WriteLine("Unexpected dialog at start of test");
                     DumpElement(dlg.Element);
                     dlg.WaitForClosed(TimeSpan.FromSeconds(5), dlg.CloseWindow);
@@ -418,7 +425,7 @@ namespace TestUtilities.UI {
             return doc.Selection.Text;
         }
 
-        public void WaitForOutputWindowText(string name, string containsText, int timeout=5000) {
+        public void WaitForOutputWindowText(string name, string containsText, int timeout = 5000) {
             for (int i = 0; i < timeout; i += 500) {
                 var text = GetOutputWindowText(name);
                 if (text.Contains(containsText)) {
@@ -438,7 +445,7 @@ namespace TestUtilities.UI {
                 if (uiShell == null) {
                     return;
                 }
-                
+
                 IntPtr hwnd;
                 uiShell.GetDialogOwnerHwnd(out hwnd);
 
@@ -974,7 +981,7 @@ namespace TestUtilities.UI {
             }
 
             var projects = EnumerateLoadedProjects(solution).ToList();
-            
+
             if (expectedProjects != null && expectedProjects.Value != projects.Count) {
                 // if we have other files open we can end up with a bonus project...
                 Assert.AreEqual(
@@ -992,13 +999,13 @@ namespace TestUtilities.UI {
             var vsProject = string.IsNullOrEmpty(projectName) ?
                 projects.OfType<IVsHierarchy>().FirstOrDefault() :
                 projects.OfType<IVsHierarchy>().FirstOrDefault(p => {
-                string mk;
-                if (ErrorHandler.Failed(solution.GetUniqueNameOfProject(p, out mk))) {
-                    return false;
-                }
-                Console.WriteLine(mk);
-                return Path.GetFileNameWithoutExtension(mk) == projectName;
-            });
+                    string mk;
+                    if (ErrorHandler.Failed(solution.GetUniqueNameOfProject(p, out mk))) {
+                        return false;
+                    }
+                    Console.WriteLine(mk);
+                    return Path.GetFileNameWithoutExtension(mk) == projectName;
+                });
 
             string outputText = "(unable to get Solution output)";
             try {

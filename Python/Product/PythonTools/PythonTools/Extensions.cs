@@ -168,7 +168,7 @@ namespace Microsoft.PythonTools {
                     // When it is autocompletion (as when typing in front of the existing contruct), take left part only.
                     var span = completeWord ? lastToken.Span : Span.FromBounds(lastToken.Span.Start, position);
                     return snapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
-                } 
+                }
 
                 // Handle "<|="
                 return null;
@@ -453,7 +453,12 @@ namespace Microsoft.PythonTools {
         internal static PythonProjectNode GetProjectFromFile(this IServiceProvider serviceProvider, string filename) {
             return serviceProvider.GetProjectFromOpenFile(filename) ?? serviceProvider.GetProjectContainingFile(filename);
         }
-        
+
+        internal static IPythonWorkspaceContext GetWorkspace(this IServiceProvider serviceProvider) {
+            var workspaceContextProvider = serviceProvider.GetComponentModel().GetService<IPythonWorkspaceContextProvider>();
+            return workspaceContextProvider.Workspace;
+        }
+
         internal static ITrackingSpan GetCaretSpan(this ITextView view) {
             var caretPoint = view.GetPythonCaret();
             Debug.Assert(caretPoint != null);

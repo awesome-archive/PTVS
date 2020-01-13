@@ -40,8 +40,7 @@ namespace Microsoft.PythonTools.Repl {
         IInteractiveEvaluator,
         IPythonInteractiveEvaluator,
         IMultipleScopeEvaluator,
-        IPythonInteractiveIntellisense
-    {
+        IPythonInteractiveIntellisense {
         private PythonDebugProcessReplEvaluator _activeEvaluator;
         private readonly Dictionary<int, PythonDebugProcessReplEvaluator> _evaluators = new Dictionary<int, PythonDebugProcessReplEvaluator>(); // process id to evaluator
         private readonly Dictionary<int, Task> _attachingTasks = new Dictionary<int, Task>();
@@ -121,7 +120,7 @@ namespace Microsoft.PythonTools.Repl {
             }
             if (_activeEvaluator != null) {
                 return _activeEvaluator.CanExecuteCode(text);
-            }else if (CustomDebugAdapterProtocolExtension.CanUseExperimental()) {
+            } else if (CustomDebugAdapterProtocolExtension.CanUseExperimental()) {
                 return CanExecuteCodeExperimental(text);
             }
             return true;
@@ -164,8 +163,14 @@ namespace Microsoft.PythonTools.Repl {
             } else {
                 if (CustomDebugAdapterProtocolExtension.CanUseExperimental()) {
                     var tid = _serviceProvider.GetDTE().Debugger.CurrentThread.ID;
-                    var result = CustomDebugAdapterProtocolExtension.EvaluateReplRequest(text, tid);
-                    CurrentWindow.Write(result);
+                    (bool isSuccessful, string message) result = CustomDebugAdapterProtocolExtension.EvaluateReplRequest(text, tid);
+
+                    if (!result.isSuccessful) {
+                        CurrentWindow.WriteError(result.message);
+                        return ExecutionResult.Failed;
+                    }
+
+                    CurrentWindow.Write(result.message);
                 }
             }
 
@@ -200,10 +205,7 @@ namespace Microsoft.PythonTools.Repl {
         }
 
         public string FormatClipboard() {
-            if (_activeEvaluator != null) {
-                return _activeEvaluator.FormatClipboard();
-            }
-            return String.Empty;
+            return PythonCommonInteractiveEvaluator.FormatClipboard(_serviceProvider, CurrentWindow);
         }
 
         public void Dispose() {
@@ -288,9 +290,10 @@ namespace Microsoft.PythonTools.Repl {
             } else if (CustomDebugAdapterProtocolExtension.CanUseExperimental()) {
                 var expression = string.Format(CultureInfo.InvariantCulture, "':'.join(dir({0}))", text ?? "");
                 var tid = _serviceProvider.GetDTE().Debugger.CurrentThread.ID;
-                var result = CustomDebugAdapterProtocolExtension.EvaluateReplRequest(text, tid);
-                if (result != null) {
-                    var completionResults = result
+                (bool isSuccessful, string message) result = CustomDebugAdapterProtocolExtension.EvaluateReplRequest(text, tid);
+
+                if (result.isSuccessful) {
+                    var completionResults = result.message
                                     .Split(':')
                                     .Where(r => !string.IsNullOrEmpty(r))
                                     .Select(r => new CompletionResult(r, Interpreter.PythonMemberType.Field))
@@ -561,8 +564,9 @@ namespace Microsoft.PythonTools.Repl {
             }
 
             process.ProcessExited += new EventHandler<ProcessExitedEventArgs>(OnProcessExited);
-            var evaluator = new PythonDebugProcessReplEvaluator(_serviceProvider, process, threadIdMapper);
-            evaluator.CurrentWindow = CurrentWindow;
+            var evaluator = new PythonDebugProcessReplEvaluator(_serviceProvider, process, threadIdMapper) {
+                CurrentWindow = CurrentWindow
+            };
             evaluator.AvailableScopesChanged += new EventHandler<EventArgs>(evaluator_AvailableScopesChanged);
             evaluator.MultipleScopeSupportChanged += new EventHandler<EventArgs>(evaluator_MultipleScopeSupportChanged);
             await evaluator.InitializeAsync();

@@ -43,54 +43,49 @@ namespace ReplWindowUITestsRunner {
 
         #region Smoke tests
 
-        [TestMethod, Priority(2)]
+        [TestMethod, Priority(UITestPriority.P2)]
         [TestCategory("Installed")]
         public void ExecuteInReplSysArgv() {
             _vs.RunTest(nameof(ReplWindowUITests.ReplWindowUITests.ExecuteInReplSysArgv), Interpreter);
         }
 
-        [TestMethod, Priority(2)]
+        [TestMethod, Priority(UITestPriority.P2)]
         [TestCategory("Installed")]
         public void ExecuteInReplSysArgvScriptArgs() {
             _vs.RunTest(nameof(ReplWindowUITests.ReplWindowUITests.ExecuteInReplSysArgvScriptArgs), Interpreter);
         }
 
-        [TestMethod, Priority(2)]
+        [TestMethod, Priority(UITestPriority.P2)]
         [TestCategory("Installed")]
         public void ExecuteInReplSysPath() {
             _vs.RunTest(nameof(ReplWindowUITests.ReplWindowUITests.ExecuteInReplSysPath), Interpreter);
         }
 
-        [TestMethod, Priority(2)]
+        [TestMethod, Priority(UITestPriority.P2)]
         [TestCategory("Installed")]
         public void ExecuteInReplUnicodeFilename() {
             _vs.RunTest(nameof(ReplWindowUITests.ReplWindowUITests.ExecuteInReplUnicodeFilename), Interpreter);
         }
 
-        [TestMethod, Priority(2)]
+        [TestMethod, Priority(UITestPriority.P2)]
         [TestCategory("Installed")]
         public void CwdImport() {
             _vs.RunTest(nameof(ReplWindowUITests.ReplWindowUITests.CwdImport), Interpreter);
         }
 
-        [TestMethod, Priority(2)]
+        [TestMethod, Priority(UITestPriority.P2)]
         [TestCategory("Installed")]
         public void QuitAndReset() {
             _vs.RunTest(nameof(ReplWindowUITests.ReplWindowUITests.QuitAndReset), Interpreter);
         }
 
-        [TestMethod, Priority(2)]
+        [TestMethod, Priority(UITestPriority.P2)]
         [TestCategory("Installed")]
         public void PrintAllCharacters() {
             _vs.RunTest(nameof(ReplWindowUITests.ReplWindowUITests.PrintAllCharacters), Interpreter);
         }
 
         #endregion
-    }
-
-    [TestClass]
-    public class ReplWindowSmokeUITests26 : ReplWindowSmokeUITests {
-        protected override string Interpreter => "Python26|Python26_x64";
     }
 
     [TestClass]
@@ -104,22 +99,12 @@ namespace ReplWindowUITestsRunner {
     }
 
     [TestClass]
-    public class ReplWindowSmokeUITests33 : ReplWindowSmokeUITests {
-        protected override string Interpreter => "Python33|Python36_x64";
-    }
-
-    [TestClass]
-    public class ReplWindowSmokeUITests34 : ReplWindowSmokeUITests {
-        protected override string Interpreter => "Python34|Python36_x64";
-    }
-
-    [TestClass]
     public class ReplWindowSmokeUITests35 : ReplWindowSmokeUITests {
         protected override string Interpreter => "Python35|Python36_x64";
     }
 
     [TestClass]
-    public class ReplWindowSmokeUITests36 : ReplWindowSmokeUITests {
-        protected override string Interpreter => "Python36|Python36_x64";
+    public class ReplWindowSmokeUITests37 : ReplWindowSmokeUITests {
+        protected override string Interpreter => "Python37|Python37_x64";
     }
 }

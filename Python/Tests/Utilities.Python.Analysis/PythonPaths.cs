@@ -32,29 +32,23 @@ namespace TestUtilities {
             .Where(pii => pii.Configuration.Id.Contains("PythonCore|") || pii.Configuration.Id.Contains("ContinuumAnalytics|"))
             .ToList();
 
-        public static readonly PythonVersion Python26 = GetCPythonVersion(PythonLanguageVersion.V26, InterpreterArchitecture.x86);
         public static readonly PythonVersion Python27 = GetCPythonVersion(PythonLanguageVersion.V27, InterpreterArchitecture.x86);
-        public static readonly PythonVersion Python31 = GetCPythonVersion(PythonLanguageVersion.V31, InterpreterArchitecture.x86);
-        public static readonly PythonVersion Python32 = GetCPythonVersion(PythonLanguageVersion.V32, InterpreterArchitecture.x86);
-        public static readonly PythonVersion Python33 = GetCPythonVersion(PythonLanguageVersion.V33, InterpreterArchitecture.x86);
-        public static readonly PythonVersion Python34 = GetCPythonVersion(PythonLanguageVersion.V34, InterpreterArchitecture.x86);
         public static readonly PythonVersion Python35 = GetCPythonVersion(PythonLanguageVersion.V35, InterpreterArchitecture.x86);
         public static readonly PythonVersion Python36 = GetCPythonVersion(PythonLanguageVersion.V36, InterpreterArchitecture.x86);
         public static readonly PythonVersion Python37 = GetCPythonVersion(PythonLanguageVersion.V37, InterpreterArchitecture.x86);
+        public static readonly PythonVersion Python38 = GetCPythonVersion(PythonLanguageVersion.V38, InterpreterArchitecture.x86);
         public static readonly PythonVersion IronPython27 = GetIronPythonVersion(false);
-        public static readonly PythonVersion Python26_x64 = GetCPythonVersion(PythonLanguageVersion.V26, InterpreterArchitecture.x64);
         public static readonly PythonVersion Python27_x64 = GetCPythonVersion(PythonLanguageVersion.V27, InterpreterArchitecture.x64);
-        public static readonly PythonVersion Python31_x64 = GetCPythonVersion(PythonLanguageVersion.V31, InterpreterArchitecture.x64);
-        public static readonly PythonVersion Python32_x64 = GetCPythonVersion(PythonLanguageVersion.V32, InterpreterArchitecture.x64);
-        public static readonly PythonVersion Python33_x64 = GetCPythonVersion(PythonLanguageVersion.V33, InterpreterArchitecture.x64);
-        public static readonly PythonVersion Python34_x64 = GetCPythonVersion(PythonLanguageVersion.V34, InterpreterArchitecture.x64);
         public static readonly PythonVersion Python35_x64 = GetCPythonVersion(PythonLanguageVersion.V35, InterpreterArchitecture.x64);
         public static readonly PythonVersion Python36_x64 = GetCPythonVersion(PythonLanguageVersion.V36, InterpreterArchitecture.x64);
         public static readonly PythonVersion Python37_x64 = GetCPythonVersion(PythonLanguageVersion.V37, InterpreterArchitecture.x64);
+        public static readonly PythonVersion Python38_x64 = GetCPythonVersion(PythonLanguageVersion.V38, InterpreterArchitecture.x64);
         public static readonly PythonVersion Anaconda27 = GetAnacondaVersion(PythonLanguageVersion.V27, InterpreterArchitecture.x86);
         public static readonly PythonVersion Anaconda27_x64 = GetAnacondaVersion(PythonLanguageVersion.V27, InterpreterArchitecture.x64);
         public static readonly PythonVersion Anaconda36 = GetAnacondaVersion(PythonLanguageVersion.V36, InterpreterArchitecture.x86);
         public static readonly PythonVersion Anaconda36_x64 = GetAnacondaVersion(PythonLanguageVersion.V36, InterpreterArchitecture.x64);
+        public static readonly PythonVersion Anaconda37 = GetAnacondaVersion(PythonLanguageVersion.V37, InterpreterArchitecture.x86);
+        public static readonly PythonVersion Anaconda37_x64 = GetAnacondaVersion(PythonLanguageVersion.V37, InterpreterArchitecture.x64);
         public static readonly PythonVersion IronPython27_x64 = GetIronPythonVersion(true);
 
         public static readonly PythonVersion Jython27 = GetJythonVersion(PythonLanguageVersion.V27);
@@ -70,12 +64,12 @@ namespace TestUtilities {
                 }
 
                 return new PythonVersion(
-                    new InterpreterConfiguration(
+                    new VisualStudioInterpreterConfiguration(
                         x64 ? "IronPython|2.7-64" : "IronPython|2.7-32",
                         string.Format("IronPython {0} 2.7", x64 ? "64-bit" : "32-bit"),
                         installPath,
                         Path.Combine(installPath, exeName),
-                        arch: x64 ? InterpreterArchitecture.x64 : InterpreterArchitecture.x86,
+                        architecture: x64 ? InterpreterArchitecture.x64 : InterpreterArchitecture.x86,
                         version: new Version(2, 7),
                         pathVar: "IRONPYTHONPATH"
                     ),
@@ -124,13 +118,13 @@ namespace TestUtilities {
                     ProcessorArchitecture.None;
 
                 if (procArch == Microsoft.PythonTools.Infrastructure.NativeMethods.GetBinaryType(path)) {
-                    return new PythonVersion(new InterpreterConfiguration(
+                    return new PythonVersion(new VisualStudioInterpreterConfiguration(
                         CPythonInterpreterFactoryConstants.GetInterpreterId("PythonCore", tag),
                         "Python {0} {1}".FormatInvariant(arch, ver),
                         prefixPath,
                         exePath,
                         pathVar: CPythonInterpreterFactoryConstants.PathEnvironmentVariableName,
-                        arch: arch,
+                        architecture: arch,
                         version: ver
                     ));
                 }
@@ -164,7 +158,7 @@ namespace TestUtilities {
                 if (libPath == null || !libPath.EnumerateFiles("site.py").Any()) {
                     continue;
                 }
-                return new PythonVersion(new InterpreterConfiguration(
+                return new PythonVersion(new VisualStudioInterpreterConfiguration(
                     CPythonInterpreterFactoryConstants.GetInterpreterId(
                         "Jython",
                         version.ToVersion().ToString()
@@ -180,6 +174,8 @@ namespace TestUtilities {
 
         public static IEnumerable<PythonVersion> AnacondaVersions {
             get {
+                if (Anaconda37 != null) yield return Anaconda37;
+                if (Anaconda37_x64 != null) yield return Anaconda37_x64;
                 if (Anaconda36 != null) yield return Anaconda36;
                 if (Anaconda36_x64 != null) yield return Anaconda36_x64;
                 if (Anaconda27 != null) yield return Anaconda27;
@@ -189,22 +185,12 @@ namespace TestUtilities {
 
         public static IEnumerable<PythonVersion> Versions {
             get {
-                if (Python26 != null) yield return Python26;
                 if (Python27 != null) yield return Python27;
-                if (Python31 != null) yield return Python31;
-                if (Python32 != null) yield return Python32;
-                if (Python33 != null) yield return Python33;
-                if (Python34 != null) yield return Python34;
                 if (Python35 != null) yield return Python35;
                 if (Python36 != null) yield return Python36;
                 if (Python37 != null) yield return Python37;
                 if (IronPython27 != null) yield return IronPython27;
-                if (Python26_x64 != null) yield return Python26_x64;
                 if (Python27_x64 != null) yield return Python27_x64;
-                if (Python31_x64 != null) yield return Python31_x64;
-                if (Python32_x64 != null) yield return Python32_x64;
-                if (Python33_x64 != null) yield return Python33_x64;
-                if (Python34_x64 != null) yield return Python34_x64;
                 if (Python35_x64 != null) yield return Python35_x64;
                 if (Python36_x64 != null) yield return Python36_x64;
                 if (Python37_x64 != null) yield return Python37_x64;
@@ -262,7 +248,7 @@ namespace TestUtilities {
         }
 
         public override string ToString() => Configuration.Description;
-        public string PrefixPath => Configuration.PrefixPath;
+        public string PrefixPath => Configuration.GetPrefixPath();
         public string InterpreterPath => Configuration.InterpreterPath;
         public PythonLanguageVersion Version => Configuration.Version.ToLanguageVersion();
         public string Id => Configuration.Id;
@@ -271,10 +257,50 @@ namespace TestUtilities {
     }
 
     public static class PythonVersionExtensions {
-        public static void AssertInstalled(this PythonVersion self) {
-            if(self == null || !File.Exists(self.InterpreterPath)) {
-                Assert.Inconclusive("Python interpreter not installed");
+        public static void AssertInstalled(this PythonVersion pyVersion) {
+            if (pyVersion == null || !File.Exists(pyVersion.InterpreterPath)) {
+                if(pyVersion == null) {
+                    Assert.Inconclusive("Python interpreter is not installed. pyVersion is null. ");
+                } else {
+                    Assert.Inconclusive(string.Format("Python version {0} is not installed.", pyVersion.Configuration.Version.ToString()));
+                }
             }
+        }
+
+        public static void AssertInstalled(this PythonVersion pyVersion, string customMessage) {
+            if (pyVersion == null || !File.Exists(pyVersion.InterpreterPath)) {
+                Assert.Inconclusive(customMessage);
+            }
+        }
+
+        /// <summary>
+        /// Creates a Python virtual environment in specified directory and installs the specified packages.
+        /// </summary>
+        public static void CreateVirtualEnv(this PythonVersion pyVersion, string envPath, IEnumerable<string> packages) {
+            pyVersion.CreateVirtualEnv(envPath);
+
+            var envPythonExePath = Path.Combine(envPath, "scripts", "python.exe");
+            foreach (var package in packages.MaybeEnumerate()) {
+                using (var output = ProcessOutput.RunHiddenAndCapture(envPythonExePath, "-m", "pip", "install", package)) {
+                    Assert.IsTrue(output.Wait(TimeSpan.FromSeconds(30)));
+                    Assert.AreEqual(0, output.ExitCode);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates a Python virtual environment in specified directory.
+        /// </summary>
+        public static void CreateVirtualEnv(this PythonVersion pyVersion, string envPath) {
+            var virtualEnvModule = (pyVersion.Version < PythonLanguageVersion.V30) ? "virtualenv" : "venv";
+            using (var p = ProcessOutput.RunHiddenAndCapture(pyVersion.InterpreterPath, "-m", virtualEnvModule, envPath)) {
+                Console.WriteLine(p.Arguments);
+                Assert.IsTrue(p.Wait(TimeSpan.FromMinutes(3)));
+                Console.WriteLine(string.Join(Environment.NewLine, p.StandardOutputLines.Concat(p.StandardErrorLines)));
+                Assert.AreEqual(0, p.ExitCode);
+            }
+
+            Assert.IsTrue(File.Exists(Path.Combine(envPath, "scripts", "python.exe")));
         }
     }
 }

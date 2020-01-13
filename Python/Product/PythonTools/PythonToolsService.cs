@@ -109,6 +109,7 @@ namespace Microsoft.PythonTools {
             _diagnosticsProvider = new DiagnosticsProvider(container);
             Logger = (IPythonToolsLogger)container.GetService(typeof(IPythonToolsLogger));
             EnvironmentSwitcherManager = new EnvironmentSwitcherManager(container);
+            WorkspaceInfoBarManager = new WorkspaceInfoBarManager(container);
 
             _idleManager.OnIdle += OnIdleInitialization;
 
@@ -141,6 +142,9 @@ namespace Microsoft.PythonTools {
             foreach (var kv in GetActiveSharedAnalyzers()) {
                 kv.Value.Dispose();
             }
+
+            EnvironmentSwitcherManager.Dispose();
+            WorkspaceInfoBarManager.Dispose();
         }
 
         private void InitializeLogging() {
@@ -183,10 +187,14 @@ namespace Microsoft.PythonTools {
 
         internal EnvironmentSwitcherManager EnvironmentSwitcherManager { get; }
 
+        internal WorkspaceInfoBarManager WorkspaceInfoBarManager { get; }
+
         internal Task<VsProjectAnalyzer> CreateAnalyzerAsync(IPythonInterpreterFactory factory) {
             if (factory == null) {
-                return VsProjectAnalyzer.CreateDefaultAsync(EditorServices, InterpreterFactoryCreator.CreateAnalysisInterpreterFactory(new Version(2, 7)));
+                var configuration = new VisualStudioInterpreterConfiguration("AnalysisOnly|2.7", "Analysis Only 2.7", version: new Version(2, 7));
+                factory = InterpreterFactoryCreator.CreateInterpreterFactory(configuration);
             }
+
             return VsProjectAnalyzer.CreateDefaultAsync(EditorServices, factory);
         }
 
@@ -259,6 +267,12 @@ namespace Microsoft.PythonTools {
                 if (analyzer != null) {
                     yield return new KeyValuePair<string, VsProjectAnalyzer>(proj.Caption, analyzer);
                 }
+            }
+
+            var workspaceAnalysis = _container.GetComponentModel().GetService<WorkspaceAnalysis>();
+            var workspaceAnalyzer = workspaceAnalysis.TryGetWorkspaceAnalyzer();
+            if (workspaceAnalyzer != null) {
+                yield return new KeyValuePair<string, VsProjectAnalyzer>(workspaceAnalysis.WorkspaceName, workspaceAnalyzer);
             }
         }
 
@@ -647,39 +661,7 @@ namespace Microsoft.PythonTools {
         #endregion
 
         internal Dictionary<string, string> GetFullEnvironment(LaunchConfiguration config) {
-            if (config == null) {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            // Start with global environment, add configured environment,
-            // then add search paths.
-            var baseEnv = Environment.GetEnvironmentVariables();
-            // Clear search paths from the global environment. The launch
-            // configuration should include the existing value
-
-            var pathVar = config.Interpreter?.PathEnvironmentVariable;
-            if (string.IsNullOrEmpty(pathVar)) {
-                pathVar = "PYTHONPATH";
-            }
-            baseEnv[pathVar] = string.Empty;
-            var env = PathUtils.MergeEnvironments(
-                baseEnv.AsEnumerable<string, string>(),
-                config.GetEnvironmentVariables(),
-                "Path", pathVar
-            );
-            if (config.SearchPaths != null && config.SearchPaths.Any()) {
-                env = PathUtils.MergeEnvironments(
-                    env,
-                    new[] {
-                        new KeyValuePair<string, string>(
-                            pathVar,
-                            PathUtils.JoinPathList(config.SearchPaths)
-                        )
-                    },
-                    pathVar
-                );
-            }
-            return env;
+           return LaunchConfigurationUtils.GetFullEnvironment(config, _container);
         }
 
         internal IEnumerable<string> GetGlobalPythonSearchPaths(InterpreterConfiguration interpreter) {

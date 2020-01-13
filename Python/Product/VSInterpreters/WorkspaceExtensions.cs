@@ -21,38 +21,104 @@ using System.Threading.Tasks;
 using Microsoft.PythonTools.Infrastructure;
 using Microsoft.PythonTools.Interpreter;
 using Microsoft.VisualStudio.Workspace;
+using Microsoft.VisualStudio.Workspace.Settings;
 
 namespace Microsoft.PythonTools {
     static class WorkspaceExtensions {
         private const string PythonSettingsType = "PythonSettings";
         private const string InterpreterProperty = "Interpreter";
+        private const string SearchPathsProperty = "SearchPaths";
 
-        public static string GetInterpreter(this IWorkspace workspace) {
+        public static string GetStringProperty(this IWorkspace workspace, string propertyName) {
             if (workspace == null) {
                 throw new ArgumentNullException(nameof(workspace));
             }
 
             var settingsMgr = workspace.GetSettingsManager();
             var settings = settingsMgr.GetAggregatedSettings(PythonSettingsType);
-            settings.GetProperty(InterpreterProperty, out string interpreter);
+            settings.GetProperty(propertyName, out string propertyVal);
 
-            return interpreter;
+            return propertyVal;
         }
 
-        public static async Task SetInterpreterAsync(this IWorkspace workspace, string interpreter) {
+        public static bool? GetBoolProperty(this IWorkspace workspace, string propertyName) {
             if (workspace == null) {
                 throw new ArgumentNullException(nameof(workspace));
             }
 
             var settingsMgr = workspace.GetSettingsManager();
+            var settings = settingsMgr.GetAggregatedSettings(PythonSettingsType);
+            if (settings.GetProperty(propertyName, out bool propertyVal) == WorkspaceSettingsResult.Success) {
+                return propertyVal;
+            }
+
+            return null;
+        }
+
+        public static string GetInterpreter(this IWorkspace workspace) {
+            return workspace.GetStringProperty(InterpreterProperty);
+        }
+
+        public static string[] GetSearchPaths(this IWorkspace workspace) {
+            if (workspace == null) {
+                throw new ArgumentNullException(nameof(workspace));
+            }
+
+            var settingsMgr = workspace.GetSettingsManager();
+            var settings = settingsMgr.GetAggregatedSettings(PythonSettingsType);
+            var searchPaths = settings.UnionPropertyArray<string>(SearchPathsProperty);
+
+            return searchPaths.ToArray();
+        }
+
+        public static string[] GetAbsoluteSearchPaths(this IWorkspace workspace) {
+            return workspace.GetSearchPaths()
+                .Select(sp => PathUtils.GetAbsoluteDirectoryPath(workspace.Location, sp))
+                .ToArray();
+        }
+
+        public static async Task SetPropertyAsync(this IWorkspace workspace, string propertyName, string propertyVal) {
+            if (workspace == null) {
+                throw new ArgumentNullException(nameof(workspace));
+            }
+
+            if (propertyName == null) {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
+
+            var settingsMgr = workspace.GetSettingsManager();
             using (var persist = await settingsMgr.GetPersistanceAsync(true)) {
                 var writer = await persist.GetWriter(PythonSettingsType);
-                if (interpreter != null) {
-                    writer.SetProperty(InterpreterProperty, interpreter);
+                if (propertyVal != null) {
+                    writer.SetProperty(propertyName, propertyVal);
                 } else {
-                    writer.Delete(InterpreterProperty);
+                    writer.Delete(propertyName);
                 }
             }
+        }
+
+        public static async Task SetPropertyAsync(this IWorkspace workspace, string propertyName, bool? propertyVal) {
+            if (workspace == null) {
+                throw new ArgumentNullException(nameof(workspace));
+            }
+
+            if (propertyName == null) {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
+
+            var settingsMgr = workspace.GetSettingsManager();
+            using (var persist = await settingsMgr.GetPersistanceAsync(true)) {
+                var writer = await persist.GetWriter(PythonSettingsType);
+                if (propertyVal.HasValue) {
+                    writer.SetProperty(propertyName, propertyVal.Value);
+                } else {
+                    writer.Delete(propertyName);
+                }
+            }
+        }
+
+        public static Task SetInterpreterAsync(this IWorkspace workspace, string interpreter) {
+            return workspace.SetPropertyAsync(InterpreterProperty, interpreter);
         }
 
         public static IPythonInterpreterFactory GetInterpreterFactory(this IWorkspace workspace, IInterpreterRegistryService registryService, IInterpreterOptionsService optionsService) {
@@ -89,7 +155,7 @@ namespace Microsoft.PythonTools {
                 throw new ArgumentNullException(nameof(workspace));
             }
 
-            return workspace.SetInterpreterAsync(factory.Configuration.Id);
+            return workspace.SetInterpreterAsync(factory?.Configuration.Id);
         }
 
         public static string GetRequirementsTxtPath(this IWorkspace workspace) {

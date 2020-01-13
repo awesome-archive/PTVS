@@ -61,7 +61,8 @@ namespace Microsoft.PythonTools.Environments {
             "3.4",
             "3.5",
             "3.6",
-            "3.7"
+            "3.7",
+            "3.8",
         };
 
         public static readonly DependencyProperty InterpretersProperty =
@@ -347,7 +348,7 @@ namespace Microsoft.PythonTools.Environments {
         private void SetCustomVariables(InterpreterConfiguration config) {
             Description = config.Description;
             InterpreterPath = config.InterpreterPath;
-            WindowsInterpreterPath = config.WindowsInterpreterPath;
+            WindowsInterpreterPath = config.GetWindowsInterpreterPath();
             ArchitectureName = config.ArchitectureString;
             VersionName = config.Version.ToString();
             PathEnvironmentVariable = config.PathEnvironmentVariable;

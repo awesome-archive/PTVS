@@ -20,11 +20,11 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.PythonTools.Infrastructure;
-using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Threading;
 using Newtonsoft.Json;
 
 namespace Microsoft.PythonTools.Interpreter {
@@ -39,7 +39,6 @@ namespace Microsoft.PythonTools.Interpreter {
     [Export(typeof(CondaEnvironmentFactoryProvider))]
     [PartCreationPolicy(CreationPolicy.Shared)]
     class CondaEnvironmentFactoryProvider : IPythonInterpreterFactoryProvider, IDisposable {
-        private readonly IServiceProvider _site;
         private readonly Dictionary<string, PythonInterpreterInformation> _factories = new Dictionary<string, PythonInterpreterInformation>();
         internal const string FactoryProviderName = "CondaEnv";
         internal const string EnvironmentCompanyName = "CondaEnv";
@@ -48,6 +47,8 @@ namespace Microsoft.PythonTools.Interpreter {
         private int _ignoreNotifications;
         private bool _initialized;
         private readonly CPythonInterpreterFactoryProvider _globalProvider;
+        private readonly ICondaLocatorProvider _condaLocatorProvider;
+        private readonly JoinableTaskFactory _joinableTaskFactory;
         private readonly bool _watchFileSystem;
         private FileSystemWatcher _envsTxtWatcher;
         private FileSystemWatcher _condaFolderWatcher;
@@ -56,24 +57,31 @@ namespace Microsoft.PythonTools.Interpreter {
         private string _environmentsTxtFolder;
         private string _environmentsTxtPath;
 
+        private static readonly KeyValuePair<string, string>[] UnbufferedEnv = new[] {
+            new KeyValuePair<string, string>("PYTHONUNBUFFERED", "1")
+        };
+
         internal event EventHandler DiscoveryStarted;
 
         [ImportingConstructor]
         public CondaEnvironmentFactoryProvider(
             [Import] CPythonInterpreterFactoryProvider globalProvider,
-            [Import(typeof(SVsServiceProvider), AllowDefault = true)] IServiceProvider site = null,
+            [Import] ICondaLocatorProvider condaLocatorProvider,
+            [Import] JoinableTaskContext joinableTaskContext,
             [Import("Microsoft.VisualStudioTools.MockVsTests.IsMockVs", AllowDefault = true)] object isMockVs = null
-        ) : this(globalProvider, site, isMockVs == null) {
+        ) : this(globalProvider, condaLocatorProvider, joinableTaskContext.Factory, isMockVs == null) {
         }
 
         public CondaEnvironmentFactoryProvider(
-            CPythonInterpreterFactoryProvider globalProvider, 
-            IServiceProvider site,
+            CPythonInterpreterFactoryProvider globalProvider,
+            ICondaLocatorProvider condaLocatorProvider,
+            JoinableTaskFactory joinableTaskFactory,
             bool watchFileSystem,
             string userProfileFolder = null) {
-            _site = site;
             _watchFileSystem = watchFileSystem;
             _globalProvider = globalProvider;
+            _condaLocatorProvider = condaLocatorProvider;
+            _joinableTaskFactory = joinableTaskFactory;
             _userProfileFolder = userProfileFolder;
         }
 
@@ -260,8 +268,12 @@ namespace Microsoft.PythonTools.Interpreter {
             }
         }
 
-        internal static CondaInfoResult ExecuteCondaInfo(string condaPath) {
-            using (var output = ProcessOutput.RunHiddenAndCapture(condaPath, "info", "--json")) {
+        internal async static Task<CondaInfoResult> ExecuteCondaInfoAsync(string condaPath) {
+            var activationVars = await CondaUtils.GetActivationEnvironmentVariablesForRootAsync(condaPath);
+            var envVars = activationVars.Union(UnbufferedEnv).ToArray();
+
+            var args = new[] { "info", "--json" };
+            using (var output = ProcessOutput.Run(condaPath, args, null, envVars, false, null)) {
                 output.Wait();
                 if (output.ExitCode == 0) {
                     var json = string.Join(Environment.NewLine, output.StandardOutputLines);
@@ -289,14 +301,14 @@ namespace Microsoft.PythonTools.Interpreter {
         }
 
         private void FindCondaEnvironments(List<PythonInterpreterInformation> envs) {
-            var mainCondaExePath = CondaUtils.GetRootCondaExecutablePath(_site);
-            if (mainCondaExePath != null) {
+            var mainCondaExePath = _condaLocatorProvider?.FindLocator()?.CondaExecutablePath;
+            if (!string.IsNullOrEmpty(mainCondaExePath)) {
                 envs.AddRange(FindCondaEnvironments(mainCondaExePath));
             }
         }
 
-        private static IReadOnlyList<PythonInterpreterInformation> FindCondaEnvironments(string condaPath) {
-            var condaInfoResult = ExecuteCondaInfo(condaPath);
+        private IReadOnlyList<PythonInterpreterInformation> FindCondaEnvironments(string condaPath) {
+            var condaInfoResult = _joinableTaskFactory.Run(() => ExecuteCondaInfoAsync(condaPath));
             if (condaInfoResult != null) {
                 // We skip the root to avoid duplicate entries, root is
                 // discovered by CPythonInterpreterFactoryProvider already.
@@ -331,7 +343,7 @@ namespace Microsoft.PythonTools.Interpreter {
             var arch = CPythonInterpreterFactoryProvider.ArchitectureFromExe(interpreterPath);
             var version = CPythonInterpreterFactoryProvider.VersionFromSysVersionInfo(interpreterPath);
 
-            var config = new InterpreterConfiguration(
+            var config = new VisualStudioInterpreterConfiguration(
                 CondaEnvironmentFactoryConstants.GetInterpreterId(CondaEnvironmentFactoryProvider.EnvironmentCompanyName, name),
                 description,
                 prefixPath,
